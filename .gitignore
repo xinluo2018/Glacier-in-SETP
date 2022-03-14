@@ -1,12 +1,13 @@
 __pycache__/
 .vscode/
-data/TPlateau_boundary/*
-data/rgi/*
-data/icesat2/*
-data/study_area/*
-data/dem_release/*
-data/rsimg/*
-data/aster_data/*
-data/water_jrc/*
+data/*
+# data/TPlateau_boundary/*
+# data/rgi/*
+# data/icesat2/*
+# data/study_area/*
+# data/dem_release/*
+# data/rsimg/*
+# data/aster_data/*
+# data/water_jrc/*
 **/.DS_Store
 doc/*
