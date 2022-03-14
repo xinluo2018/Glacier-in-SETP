@@ -1,0 +1,93 @@
+# -*- mode: sh -*-
+
+# Pre-Processing / stereo_pprc
+################################################################
+
+# Pre-alignment options
+#
+# Available choices are (however not all are supported by all sessions):
+#    NONE           (Recommended for anything map projected)
+#    EPIPOLAR       (Recommended for Pinhole Sessions)
+#    HOMOGRAPHY     (Recommended for ISIS wide-angle shots)
+#    AFFINEEPIPOLAR (Recommended for ISIS narrow-angle and DG sessions)
+alignment-method affineepipolar
+
+# Intensity Normalization
+force-use-entire-range       # Use entire input range
+
+# Select a preprocessing filter:
+#
+# 0 - None
+# 1 - Subtracted Mean
+# 2 - Laplacian of Gaussian (recommended)
+prefilter-mode 2
+
+# Kernel size (1-sigma) for pre-processing
+# Recommend 1.4 px for Laplacian of Gaussian
+# Recommend 25 px for Subtracted Mean
+prefilter-kernel-width 1.4
+
+# Integer Correlation / stereo_corr
+################################################################
+
+# Select a stereo algorithm. See the documentation describing
+# stereo.default for more details. Options are:
+#
+# asp_bm  (or use '0') - the ASP implementation of Block Matching.
+# asp_sgm (or use '1') - the ASP implementation of SGM.
+# asp_mgm (or use '2') - the ASP implementation of MGM.
+# asp_final_mgm (or use '3') - ASP MGM at the the finest level.
+# mgm - the originally published MGM implementation.
+stereo-algorithm asp_bm    ## default
+# stereo-algorithm asp_mgm    ## default: asp_bm
+
+# Select a cost function to use for initialization:
+#
+# 0 - absolute difference (fast)
+# 1 - squared difference  (faster .. but usually bad)
+# 2 - normalized cross correlation (recommended)
+cost-mode 0
+# cost-mode 2
+
+# Initialization step: correlation kernel size
+corr-kernel 21 21   # default
+# corr-kernel 15 15
+
+# Initialization step: correlation window size
+# corr-search -80 -2 20 2
+
+# Subpixel Refinement / stereo_rfne
+################################################################
+
+# Subpixel step: subpixel modes
+#
+# 0 - disable subpixel correlation (fastest)
+# 1 - parabola fitting (draft mode - not as accurate)
+# 2 - affine adaptive window, bayes EM weighting (slower, but much more accurate)
+# 3 - affine window, (intermediate speed, results similar to bayes EM)
+subpixel-mode 0
+# subpixel-mode 3
+
+# Subpixel step: correlation kernel size
+subpixel-kernel 35 35   # default
+# subpixel-kernel 25 25
+
+# Post Filtering / stereo_fltr
+################################################################
+
+# Automatic "erode" low confidence pixels
+filter-mode 1
+rm-half-kernel 5 5
+max-mean-diff 3
+rm-min-matches 60
+rm-threshold 3
+rm-cleanup-passes 1
+
+# Triangulation / stereo_tri
+################################################################
+
+# Size max of the universe in meters and altitude off the ground.
+# Setting both values to zero turns this post-processing step off.
+near-universe-radius 0.0
+far-universe-radius 0.0
+
