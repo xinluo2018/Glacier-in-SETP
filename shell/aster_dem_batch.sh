@@ -11,7 +11,7 @@ settings=shell/stereo.default
 echo 'stereo.default path:' $settings
 DEM_PS=0.0002777       ## 0.0002777(in degrees), 0.00013885 and 0.0000898 is about 31, 15 and 10 m/pixel
 
-dir_aster=data/aster_data
+dir_aster=data/aster_data/wkunlun-2020
 dir_l1a=$dir_aster/aster_raw_L1A
 dir_imgs_reproj=$dir_aster/aster_reproj    
 dir_dem=$dir_aster/aster_dem
@@ -23,8 +23,8 @@ ls -d ${dir_l1a}/AST_L1A*.zip > $dir_aster/list_of_zipfile.txt  # write file_nam
 
 N=1
 
-# while [ $N -le $numb_data ]
-while [ $N -le 2 ]
+while [ $N -le $numb_data ]
+# while [ $N -le 2 ]
 
 do
   echo 'processing ---> data' $N
@@ -73,7 +73,7 @@ do
                   $files_tmp/parse/run-Band3B.xml $files_tmp/stereo/run
 
   # 6) covert cloud point file to dem image
-  point2dem -r earth --tr ${DEM_PS} $files_tmp/stereo/run-PC.tif -o $dir_dem/$date_decimal/run
+  point2dem -r earth --tr ${DEM_PS} $files_tmp/stereo/run-PC.tif -o $dir_dem/$date_decimal/result
 
   rm -rf $files_tmp      ## remove tmp file
   N=$(expr $N + 1)       ## next aster .zip file

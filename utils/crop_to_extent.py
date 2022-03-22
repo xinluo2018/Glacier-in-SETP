@@ -1,11 +1,12 @@
 ## author: xin luo
 ## create: 2021.11.27
-
+## des: crop one image to specific image size. usually used for alignment to 
+##      another image.
 
 import numpy as np
 from osgeo import gdal
 
-def crop_to_extent(path_img, extent_target, size_target=None, path_save=None):
+def crop_to_extent(path_img, extent, size_target=None, path_save=None):
 
     '''
     crop image to given extent/size.
@@ -13,7 +14,7 @@ def crop_to_extent(path_img, extent_target, size_target=None, path_save=None):
         image: the image to be croped; np.array().
         extent: extent to which image should be croped;
                 list/tuple,(xmin,xmax,ymin,ymax). 
-        size: size to which image should be croped 
+        size_target: size to which image should be croped 
               list/tuple, (row, col)
     return: 
         img_croped: the croped image, np.array()
@@ -33,7 +34,7 @@ def crop_to_extent(path_img, extent_target, size_target=None, path_save=None):
     nbands = rs_data.RasterCount
     proj_wkt = rs_data.GetProjection()
     NDV = rs_data.GetRasterBand(1).GetNoDataValue()
-    xmin, xmax, ymin, ymax = extent_target
+    xmin, xmax, ymin, ymax = extent
 
     if size_target is None:
         npix_x = int(np.round((xmax - xmin) / float(dx)))  # new col

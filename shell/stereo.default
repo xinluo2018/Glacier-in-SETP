@@ -39,15 +39,15 @@ prefilter-kernel-width 1.4
 # asp_final_mgm (or use '3') - ASP MGM at the the finest level.
 # mgm - the originally published MGM implementation.
 stereo-algorithm asp_bm    ## default
-# stereo-algorithm asp_mgm    ## default: asp_bm
+# stereo-algorithm asp_mgm    ## recommend
 
 # Select a cost function to use for initialization:
 #
 # 0 - absolute difference (fast)
 # 1 - squared difference  (faster .. but usually bad)
 # 2 - normalized cross correlation (recommended)
-cost-mode 0
-# cost-mode 2
+# cost-mode 0
+cost-mode 2   # recommended
 
 # Initialization step: correlation kernel size
 corr-kernel 21 21   # default
@@ -65,8 +65,7 @@ corr-kernel 21 21   # default
 # 1 - parabola fitting (draft mode - not as accurate)
 # 2 - affine adaptive window, bayes EM weighting (slower, but much more accurate)
 # 3 - affine window, (intermediate speed, results similar to bayes EM)
-subpixel-mode 0
-# subpixel-mode 3
+subpixel-mode 3
 
 # Subpixel step: correlation kernel size
 subpixel-kernel 35 35   # default
