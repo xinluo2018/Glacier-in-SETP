@@ -13,7 +13,7 @@ def readTiff(path_in):
         img: numpy array, exent: tuple, (x_min, x_max, y_min, y_max) 
         proj info, and dimentions: (row, col, band)
     '''
-    RS_Data=gdal.Open(path_in)
+    RS_Data = gdal.Open(path_in)
     im_col = RS_Data.RasterXSize  # 
     im_row = RS_Data.RasterYSize  # 
     im_bands =RS_Data.RasterCount  # 

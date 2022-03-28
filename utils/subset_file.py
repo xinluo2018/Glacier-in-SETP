@@ -3,8 +3,6 @@
 # des: subset file with given region and time.
 
 '''
-des: subset the icesat2 data by given region and time.
-
 example:
     python subset.py ./input/path/*.h5 -r 90 91 30 31 
 '''

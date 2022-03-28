@@ -1,10 +1,13 @@
 ## reference: https://github.com/uw-cryo/asp-binder-demo/blob/master/asp_binder_utils.py
+## author: xin luo
 ## creat: 2022.3.18 # modify: xxxx
 ## des: download dem data from OpenTopography World DEM
+
 
 import os
 import sys
 import requests
+import argparse
 
 def get_dem(demtype, bounds, apikey, path_out=None):
     """
@@ -35,4 +38,39 @@ def get_dem(demtype, bounds, apikey, path_out=None):
         open(path_out, 'wb').write(response.content)
     else:
         print('!!Output file has been existed.')
+
+
+def get_args():
+
+    """ Get command-line arguments. """
+    parser = argparse.ArgumentParser(
+            description='download dem with the given extent')
+    parser.add_argument(
+            'demtype', metavar='demtype', type=str, nargs='+',
+            help='type of DEM to fetch (e.g., COP30, SRTMGL1, SRTMGL1_E')
+    parser.add_argument(
+            'bounds', metavar=('w','e','s','n'), type=float, nargs=4,
+            help=('region for data download'))
+    parser.add_argument(
+            '--apikey', metavar='apikey', type=str, nargs='+',
+            help=('opentopography api key(obtain from: https://opentopography.org/)'),
+            default=['7f97d1b49489d7c0e346b085772aef3c'])
+    parser.add_argument(
+            '--out', metavar='out', type=str, nargs='+',
+            help=('path to output filename'),
+            default=[None])
+
+    return parser.parse_args()
+
+
+if __name__ == '__main__':
+
+    # extract arguments 
+    args = get_args()
+    demtype = args.demtype[0]
+    bounds = args.bounds
+    apikey = args.apikey[0]
+    out = args.out[0]
+    get_dem(demtype, bounds, apikey, out)
+
 
