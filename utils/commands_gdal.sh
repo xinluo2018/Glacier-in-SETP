@@ -11,7 +11,7 @@ gdal_translate -outsize 20% 20% -r average -co COMPRESS=LZW $path_in $path_out
 gdal_translate -tr 1000 1000 -r average -co COMPRESS=LZW $path_in $path_out 
 
 ### ------ mosaic ------ 
-gdal_merge.py -init 0 -co COMPRESS=LZW -o $path_out $paths_in
+gdal_merge.py -init 0 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
 
 ### ------ subset by bounds------ 
 ## extent=str(ulx) str(uly) str(lrx) str(lry)
