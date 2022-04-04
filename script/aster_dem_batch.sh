@@ -8,7 +8,7 @@
 
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster_data/wkunlun-2021
+DIR_DATA=data/aster_data/wkunlun-2001
 # while getopts d:z: flag
 # do
 #   case "${flag}" in
@@ -19,8 +19,8 @@ DIR_DATA=data/aster_data/wkunlun-2021
 ## parameters configuration
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
-# settings=script/stereo.default
-# echo 'stereo.default path:' $settings
+SETTING=script/stereo.default
+echo 'stereo.default path:' $SETTING
 
 ## set variables
 DEM_PS=30     # unit:m
@@ -34,16 +34,14 @@ ls -d ${DIR_L1A}/AST_L1A*.zip > $DIR_DATA/list_of_zipfile.txt  # write file_name
 
 N=1
 
-while [ $N -le $NUMB_DATA ]
-# while [ $N -le 2 ]
+# while [ $N -le $NUMB_DATA ]
+while [ $N -le 3 ]
 
 do
   echo 'processing ---> data' $N
   PATH_FILE=$(head -$N ${DIR_DATA}/list_of_zipfile.txt | tail -1)
-  echo $PATH_FILE
   NAME_FILE=$(basename $PATH_FILE)
   echo 'aster file path:' $PATH_FILE
-  echo 'aster file name:' $PATH_FILE
   #### 1) get image acquisition time.
   MM=$(echo ${NAME_FILE:11:2})
   DD=$(echo ${NAME_FILE:13:2})
@@ -73,23 +71,21 @@ do
   ## re-projected the l1a VNIR bands (15 m, bands of green, red, nir)  
   ## 4.1) to wgs84
   mapproject -t rpc --t_srs "$TSRS_WGS84" WGS84 $FILES_TMP/parse/run-Band3N.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif
-  mapproject -t rpc --t_srs "$TSRS_WGS84" WGS84 $FILES_TMP/unzip/*VNIR_Band1*.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band1_wgs84.tif
-  mapproject -t rpc --t_srs "$TSRS_WGS84" WGS84 $FILES_TMP/unzip/*VNIR_Band2*.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band2_wgs84.tif
-  python utils/lay_stack.py  $DIR_IMG_REPROJ/VNIR-Band1_wgs84.tif $DIR_IMG_REPROJ/VNIR-Band2_wgs84.tif \
-                             $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif $DIR_IMG_REPROJ/VNIR-LaySta_wgs84.tif 
 
-  ## 4.2) get image extent and downloda srtm dem data 
-  EXTENT=$(python utils/get_extent.py $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif) 
+  ## 4.2) get image extent and download srtm dem data 
+  EXTENT=$(python utils/get_extent.py $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif)  
+  rm $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif
   read -a EXTENT <<< $EXTENT
   WEST=${EXTENT[1]}; EAST=${EXTENT[2]}
   SOUTH=${EXTENT[3]}; NORTH=${EXTENT[4]}
   WEST_INT=$((${WEST%.*}+1)); EAST_INT=$((${EAST%.*}+1))
-  if [ $WEST_INT -gt 180 ]; then WEST=$(echo $WEST - 360 | bc); fi
+  if [ $WEST_INT -gt 180 ]; then WEST=$(echo $WEST - 360 | bc); fi ## longitude offset from [0,360] to [-180,180].
   if [ $EAST_INT -gt 180 ]; then EAST=$(echo $EAST - 360 | bc); fi
-  ## obtain utm zone
+  ## calculate utm zone
   LON=$(echo "scale=3; $WEST / 2 + $EAST / 2" | bc)
   UTM_ZONE=$(echo "scale=4; $LON / 6 + 31" | bc)
   UTM_ZONE=$(echo $UTM_ZONE | awk '{print int($1)}')
+  echo $UTM_ZONE
 
   TSRS_UTM='+proj=utm +zone='$UTM_ZONE' +ellps=WGS84 +datum=WGS84 +units=m +no_defs' # UTM projection 
   
@@ -108,7 +104,7 @@ do
   ## note: try --stereo-algorithm asp_mgm; --corr-kernel 15 15;
   ##           --subpixel-kernel 25 25 (default: 21 21 and 35 35)
   ##       try set parameters in stereo.default file
-  parallel_stereo -t astermaprpc --skip-rough-homography --subpixel-mode 3 \
+  parallel_stereo -t astermaprpc -s $SETTING --skip-rough-homography \
                       $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif \
                       $FILES_TMP/parse/run-Band3N.xml $FILES_TMP/parse/run-Band3B.xml \
                       $FILES_TMP/pc_utm_out/run $FILES_TMP/srtm_utm.tif

@@ -1,21 +1,19 @@
 # -*- mode: sh -*-
 
-# Pre-Processing / stereo_pprc
+# 1. Pre-Processing / stereo_pprc
 ################################################################
 
 # Pre-alignment options
 #
 # Available choices are (however not all are supported by all sessions):
-#    NONE           (Recommended for anything map projected)
-#    EPIPOLAR       (Recommended for Pinhole Sessions)
-#    HOMOGRAPHY     (Recommended for ISIS wide-angle shots)
-#    AFFINEEPIPOLAR (Recommended for ISIS narrow-angle and DG sessions)
-alignment-method affineepipolar
+#    none           (Recommended for anything map projected)
+#    epipolar       (Recommended for Pinhole Sessions)
+#    homography     (Recommended for ISIS wide-angle shots)
+#    affineepipolar (Recommended for ISIS narrow-angle and DG sessions)
+alignment-method none
 
-# Intensity Normalization
-force-use-entire-range       # Use entire input range
 
-# Select a preprocessing filter:
+# Select a preprocessing filter (Used only with the asp_bm algorithm):
 #
 # 0 - None
 # 1 - Subtracted Mean
@@ -27,7 +25,7 @@ prefilter-mode 2
 # Recommend 25 px for Subtracted Mean
 prefilter-kernel-width 1.4
 
-# Integer Correlation / stereo_corr
+# 2. Integer Correlation / stereo_corr
 ################################################################
 
 # Select a stereo algorithm. See the documentation describing
@@ -41,8 +39,9 @@ prefilter-kernel-width 1.4
 stereo-algorithm asp_bm    ## default
 # stereo-algorithm asp_mgm    ## recommend
 
+
 # Select a cost function to use for initialization:
-#
+# (default = 2 for ASP_BM and 4 for ASP_SGM and ASP_MGM)
 # 0 - absolute difference (fast)
 # 1 - squared difference  (faster .. but usually bad)
 # 2 - normalized cross correlation (recommended)
@@ -56,7 +55,7 @@ corr-kernel 21 21   # default
 # Initialization step: correlation window size
 # corr-search -80 -2 20 2
 
-# Subpixel Refinement / stereo_rfne
+# 3. Subpixel Refinement / stereo_rfne
 ################################################################
 
 # Subpixel step: subpixel modes
@@ -71,22 +70,7 @@ subpixel-mode 3
 subpixel-kernel 35 35   # default
 # subpixel-kernel 25 25
 
-# Post Filtering / stereo_fltr
+
+# 4. Post Filtering (default)
 ################################################################
-
-# Automatic "erode" low confidence pixels
-filter-mode 1
-rm-half-kernel 5 5
-max-mean-diff 3
-rm-min-matches 60
-rm-threshold 3
-rm-cleanup-passes 1
-
-# Triangulation / stereo_tri
-################################################################
-
-# Size max of the universe in meters and altitude off the ground.
-# Setting both values to zero turns this post-processing step off.
-near-universe-radius 0.0
-far-universe-radius 0.0
 

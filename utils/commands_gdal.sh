@@ -11,7 +11,9 @@ gdal_translate -outsize 20% 20% -r average -co COMPRESS=LZW $path_in $path_out
 gdal_translate -tr 1000 1000 -r average -co COMPRESS=LZW $path_in $path_out 
 
 ### ------ mosaic ------ 
-gdal_merge.py -init 0 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
+## gdal_merge.py: the latter image overlap the previous image
+## '-n -999' means igore value of -999 during image mosaic
+gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
 
 ### ------ subset by bounds------ 
 ## extent=str(ulx) str(uly) str(lrx) str(lry)

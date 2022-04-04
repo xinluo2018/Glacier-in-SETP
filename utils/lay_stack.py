@@ -102,12 +102,11 @@ def get_args():
             'path_out', metavar='path_out', type=str, nargs='+',
             help='the output path of the layer stacked image')
     parser.add_argument(
-            '-u',
-            dest='union',
+            '--union',
             choices=('True','False'),
             default='True')
     parser.add_argument(
-            '-r', metavar='res', dest='res', type=int, nargs=1,
+            '--resolution', type=int, nargs=1,
             help='resolution of the output image',
             default=[None])
     return parser.parse_args()
@@ -120,8 +119,6 @@ if __name__ == '__main__':
     path_imgs = args.path_imgs
     path_out = args.path_out[0]
     union = args.union
-    res = args.res[0]
-    print(union)
-    print(res)
+    res = args.resolution[0]
     lay_stack(path_imgs, path_out, union, res)
 
