@@ -37,7 +37,11 @@ prefilter-kernel-width 1.4
 # asp_final_mgm (or use '3') - ASP MGM at the the finest level.
 # mgm - the originally published MGM implementation.
 stereo-algorithm asp_bm    ## default
-# stereo-algorithm asp_mgm    ## recommend
+# stereo-algorithm asp_mgm    ## recommend, but very slow.
+
+# Dealing with clouds and long run-times  
+corr-timeout 300   ## for asp_bm alogorithm, default is 900 seconds
+ip-filter-using-dem srtm_utm_tmp.tif 100
 
 
 # Select a cost function to use for initialization:
@@ -49,8 +53,8 @@ stereo-algorithm asp_bm    ## default
 cost-mode 2   # recommended
 
 # Initialization step: correlation kernel size
-corr-kernel 21 21   # default
-# corr-kernel 15 15
+# corr-kernel 21 21   # default
+corr-kernel 15 15
 
 # Initialization step: correlation window size
 # corr-search -80 -2 20 2
@@ -67,8 +71,8 @@ corr-kernel 21 21   # default
 subpixel-mode 3
 
 # Subpixel step: correlation kernel size
-subpixel-kernel 35 35   # default
-# subpixel-kernel 25 25
+# subpixel-kernel 35 35   # default
+subpixel-kernel 25 25
 
 
 # 4. Post Filtering (default)

@@ -1,4 +1,10 @@
 #! /bin/bash
 
-aaa=afafa
-echo 'image for mosaic'_${aaa}_1
+echo "pid is $$"
+while (( COUNT < 10 ))
+do
+  sleep 1
+  (( COUNT ++ ))
+  echo $COUNT
+done
+exit 0

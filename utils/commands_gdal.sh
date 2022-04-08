@@ -25,6 +25,11 @@ gdalwarp -co COMPRESS=LZW -cutline $path_shp $path_input $path_output
 ### ------ resize to specific width and height (resample) ------ 
 gdalwarp -co COMPRESS=LZW -ts $width $height -r bilinear $path_input $path_output
 
+### --------- image calculation ----------
+gdal_calc.py -A $path_img --A_band=1 -B $path_img --B_band=2 \
+                --outfile=$path_output --calc="(A*(abs(B-A)<100)-999*(abs(B-A)>100))"  # band math.
+
+
 ### ------ reprojection ------
 ## 1) wgs84 to utm projection
 gdalwarp  -overwrite -s_srs EPSG:4326 -t_srs EPSG:32644 -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES input.tif output.tif 

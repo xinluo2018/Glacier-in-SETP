@@ -8,7 +8,7 @@
 
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster_data/wkunlun-2001
+DIR_DATA=data/aster_data/wkunlun-2000
 # while getopts d:z: flag
 # do
 #   case "${flag}" in
@@ -34,8 +34,8 @@ ls -d ${DIR_L1A}/AST_L1A*.zip > $DIR_DATA/list_of_zipfile.txt  # write file_name
 
 N=1
 
-# while [ $N -le $NUMB_DATA ]
-while [ $N -le 3 ]
+while [ $N -le $NUMB_DATA ]
+# while [ $N -le 2 ]
 
 do
   echo 'processing ---> data' $N
@@ -74,7 +74,7 @@ do
 
   ## 4.2) get image extent and download srtm dem data 
   EXTENT=$(python utils/get_extent.py $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif)  
-  rm $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif
+  rm $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif    # used for ip-filter-using-dem in stereo.default.
   read -a EXTENT <<< $EXTENT
   WEST=${EXTENT[1]}; EAST=${EXTENT[2]}
   SOUTH=${EXTENT[3]}; NORTH=${EXTENT[4]}
@@ -92,6 +92,7 @@ do
   python utils/get_dem.py SRTMGL1_E $WEST $EAST $SOUTH $NORTH --out $FILES_TMP/srtm_wgs84.tif
    # # ## 4.3) to utm (both for dem data and aster image)
   gdalwarp -overwrite -s_srs "$TSRS_WGS84" -t_srs "$TSRS_UTM" -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES $FILES_TMP/srtm_wgs84.tif $FILES_TMP/srtm_utm.tif
+  cp $FILES_TMP/srtm_utm.tif srtm_utm_tmp.tif
 
   mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3N.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif
   mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3B.tif $FILES_TMP/parse/run-Band3B.xml $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif
@@ -113,6 +114,7 @@ do
   point2dem --tr ${DEM_PS} --t_srs "$TSRS_UTM" --errorimage $FILES_TMP/pc_utm_out/run-PC.tif -o $DIR_DEM/run
 
   rm -rf $FILES_TMP      ## remove tmp file
+  rm srtm_utm_tmp.tif
   N=$(expr $N + 1)       ## next aster .zip file
 
 done

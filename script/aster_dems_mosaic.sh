@@ -21,26 +21,26 @@ YYYY=$(echo ${NAME_FILE:8:12}) ## year of the dem data
 ## get dems path
 PATH_DEMS=$(ls $DIR_DATA/aster_dem/VNIR*/run-DEM.tif)
 
-## ----- 2) aster dem thresholding by using srtm-c dem
-##          the difference>100 between srtm dem and aster dem are masked. 
-
-for PATH_DEM in $PATH_DEMS;
-do
-  DIR_DEM=$(dirname $PATH_DEM)
-  PATH_DEM_THRE=$DIR_DEM/run-DEM_thre.tif
-  PATH_DEMS_STACK=$DIR_DEM/run-DEM_laysta.tif
-  PATH_SRTM_C=data/dem_data/srtm-c/SRTMGL1_E_wkunlun_utm.tif
-  python utils/lay_stack.py $PATH_DEM $PATH_SRTM_C $PATH_DEMS_STACK --union False
-  gdal_calc.py -A $PATH_DEMS_STACK --A_band=1 -B $PATH_DEMS_STACK --B_band=2 \
-                --outfile=$PATH_DEM_THRE --calc="(A*(abs(B-A)<100)-999*(abs(B-A)>100))"
-  rm $PATH_DEMS_STACK
-done
+## ----- 2) aster dem thresholding by using srtm-c dem; 
+##  the difference>100 between srtm dem and aster dem are masked. 
+##   !!! it is same to the option --filter-ip-using-dem in asp?
+# for PATH_DEM in $PATH_DEMS;
+# do
+#   DIR_DEM=$(dirname $PATH_DEM)
+#   PATH_DEM_THRE=$DIR_DEM/run-DEM_thre.tif
+#   PATH_DEMS_STACK=$DIR_DEM/run-DEM_laysta.tif
+#   PATH_SRTM_C=data/dem_data/srtm-c/SRTMGL1_E_wkunlun_utm.tif
+#   python utils/lay_stack.py $PATH_DEM $PATH_SRTM_C $PATH_DEMS_STACK --union False
+#   gdal_calc.py -A $PATH_DEMS_STACK --A_band=1 -B $PATH_DEMS_STACK --B_band=2 \
+#                 --outfile=$PATH_DEM_THRE --calc="(A*(abs(B-A)<100)-999*(abs(B-A)>100))"
+#   rm $PATH_DEMS_STACK
+# done
 
 
 ## -----3) sort the path_dems. 
 ## the dem nearer to July 1st is placed latter.
-PATH_DEMS_THRE=$(ls $DIR_DATA/aster_dem/VNIR*/run-DEM_thre.tif)   ##
-for PATH_DEM in $PATH_DEMS_THRE;
+# PATH_DEMS_THRE=$(ls $DIR_DATA/aster_dem/VNIR*/run-DEM_thre.tif)   ##
+for PATH_DEM in $PATH_DEMS;
 do
   date=.$(dirname $PATH_DEM | xargs basename | cut -d '.' -f 2 )
   dif=$(echo $date - 0.5 | bc | sed 's/-//')
@@ -55,7 +55,7 @@ rm $DIR_DATA/aster_dem/list_dems.txt
 rm $DIR_DATA/aster_dem/list_dems_sort.txt
 
 ## ----- 4) mosaic
-PATH_MOSAIC=data/aster_data/wkunlun-dems/dems_mosaic_${YYYY}.tif  ## finally to be saved.
+PATH_MOSAIC=data/aster_data/wkunlun-dems/dems_mosaic_${YYYY}_2.tif  ## finally to be saved.
 gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $PATH_MOSAIC $PATH_DEMS_SORT
 
 ## ----- 5) subset with study area vector file
