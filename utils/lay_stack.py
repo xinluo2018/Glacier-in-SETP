@@ -14,7 +14,8 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
     path_out: str, the output path of the layer stacked image
     union: bool, if true, the output extent is the extents union of input images. 
             otherwise, the output extent is the extents intersection of input images.
-    res: resolution of the layer stacked image.
+    res: resolution of the layer stacked image. if not set, \
+         the resolution of the first image of path_imgs is the default.
     note: the first image in the path_imgs is the reference image.
     '''
 
@@ -23,9 +24,10 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
     left_max, right_max, bottom_max, up_max = -float("inf"), -float("inf"), -float("inf"), -float("inf")
     for i, path_img in enumerate(path_imgs):
         img = gdal.Open(path_img, gdal.GA_ReadOnly)
+        im_geotrans = img.GetGeoTransform()
         if i == 0:
             base_proj = img.GetProjection()
-        im_geotrans = img.GetGeoTransform()
+            dx, dy = im_geotrans[1], im_geotrans[5] # 
         im_x = img.RasterXSize  # 
         im_y = img.RasterYSize  # 
         left = im_geotrans[0]
@@ -45,14 +47,12 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
     else:
         extent = [left_max, right_min, up_min, bottom_max]
 
-    if res is not None:
+    if res is not None:   # update the dx and dy
         dx, dy = res, -res
-    else:
-        dx, dy = im_geotrans[1], im_geotrans[5]
 
     base_x = int(np.round((extent[1] - extent[0]) / float(dx)))  # new col, integer
     base_y = int(np.round((extent[3] - extent[2]) / float(dy)))  # new row, integer
-    base_dx = (extent[1] - extent[0]) / float(base_x) #update dx and dy, may be a little bias with the original dx and dy.  
+    base_dx = (extent[1] - extent[0]) / float(base_x)  # update dx and dy, may be a little bias with the original dx and dy.  
     base_dy = (extent[3] - extent[2]) / float(base_y)
     base_geotrans = (extent[0], base_dx, 0.0, extent[2], 0.0, base_dy)
 

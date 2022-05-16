@@ -48,7 +48,7 @@ def vec2mask(path_vec, path_raster, path_save=None):
         mask, np.array.
         a .tiff file written to the given path
     """
-    raster,shp = gdal.Open(path_raster, gdal.GA_ReadOnly), ogr.Open(path_vec)
+    raster, shp = gdal.Open(path_raster, gdal.GA_ReadOnly), ogr.Open(path_vec)
     x_res = raster.RasterXSize
     y_res = raster.RasterYSize
     layer = shp.GetLayer()
@@ -69,5 +69,3 @@ def vec2mask(path_vec, path_raster, path_save=None):
     mask = targetData.ReadAsArray(0, 0, x_res, y_res)
     mask = np.where(mask>0, 1, 0)
     return mask
-
-    

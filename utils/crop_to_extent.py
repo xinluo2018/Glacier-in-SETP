@@ -69,7 +69,7 @@ def crop_to_extent(path_img, extent, size_target=None, path_save=None):
     out_array = dest.ReadAsArray(0, 0,  npix_x,  npix_y)
 
     if NDV is not None:
-        out_array = np.ma.masked_where(out_array == NDV, out_array)
+        out_array = np.ma.masked_where(out_array == NDV, out_array).data
 
     if nbands > 1:
         return np.transpose(out_array, (1, 2, 0))  # 

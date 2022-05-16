@@ -1,6 +1,7 @@
 # author: xin luo
 # create: 2021.9.15.
-# des: read in and write out reorganized atl03 data
+# des: read in and write out atl03 data, the original atl03 data will be \
+#      split into multiple data with different beams and ascending/descending orbits.
 
 
 '''
@@ -66,7 +67,6 @@ def orbit_type(time, lat):
         if lat_diff > 0:
             i_asc[i_track] = True
     return i_asc, np.invert(i_asc)
-
 
 
 def readout03(file_in, dir_out):
@@ -184,7 +184,5 @@ if __name__ == '__main__':
         from joblib import Parallel, delayed
         Parallel(n_jobs=njobs, verbose=5)(
                 delayed(readout03)(f, dir_out) for f in ifiles)
-
-
 
 

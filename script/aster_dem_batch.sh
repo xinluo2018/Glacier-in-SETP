@@ -5,10 +5,10 @@
 ##      1) reprojection (to wgs84) for the L1A aster vnir bands (15 m)
 ##      2) dem generation using aster stereo images.
 ## usage: the input DIR_DATA should contains a sub-directory (namely aster_raw_l1a)
-
+## note: !!!the user should login OpenTopography firstly, because the dem download is requried.
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster_data/wkunlun-2000
+DIR_DATA=data/aster-stereo/wkunlun-2000
 # while getopts d:z: flag
 # do
 #   case "${flag}" in
@@ -24,8 +24,8 @@ echo 'stereo.default path:' $SETTING
 
 ## set variables
 DEM_PS=30     # unit:m
-TSRS_WGS84='+proj=longlat +datum=WGS84' # UTM projection 
-DIR_L1A=$DIR_DATA/aster_raw_L1A
+TSRS_WGS84='+proj=longlat +datum=WGS84' # WGS84 projection 
+DIR_L1A=$DIR_DATA/aster-raw-L1A
 
 NUMB_DATA=$(ls -d $DIR_L1A/AST_L1A*.zip | wc | awk '{print $1}')
 echo "Numb of DEMs to process: " $NUMB_DATA

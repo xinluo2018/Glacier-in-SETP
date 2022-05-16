@@ -6,7 +6,6 @@
 example:
     python subset.py ./input/path/*.h5 -r 90 91 30 31 
 '''
-
 import os
 import h5py 
 import argparse

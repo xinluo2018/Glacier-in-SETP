@@ -1,6 +1,7 @@
 __pycache__/
 .vscode/
 data/*
+**/.DS_Store
 # data/TPlateau_boundary/*
 # data/rgi/*
 # data/icesat2/*
@@ -9,5 +10,5 @@ data/*
 # data/rsimg/*
 # data/aster_data/*
 # data/water_jrc/*
-**/.DS_Store
-doc/*
+
+
