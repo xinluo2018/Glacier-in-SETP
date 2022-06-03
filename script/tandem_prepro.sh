@@ -2,7 +2,7 @@
 ## author: xin luo;
 ## create: 2022.05.14;
 ## des: mosaic, subset and projection for the download tandem files.
-
+##      the tandem data is 1x1 degree tiled data
 
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
@@ -28,15 +28,14 @@ PATH_DEMs=$(ls $DIR_DATA/TDM1_DEM*/DEM/*_DEM.tif)
 PATH_MOSAIC=$DIR_DATA/dems_mosaic.tif  ## 
 gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $PATH_MOSAIC $PATH_DEMs
 
-
-# ## ----- 3) subset with study area vector file
+# ## ---- 3) subset with study area vector file
 WEST=80.118; EAST=81.941; SOUTH=34.907; NORTH=35.852
 EXTENT="$WEST $NORTH $EAST $SOUTH"
 PATH_SUBS=$DIR_DATA/dems_mosaic_wkunlun.tif  ## 
 gdal_translate -co COMPRESS=LZW -projwin $EXTENT $PATH_MOSAIC $PATH_SUBS  ## by extent 
 ## gdalwarp -co COMPRESS=LZW -cutline $PATH_SHP $PATH_MOSAIC $PATH_SUBS  ## by .shp file
 
-## ----- 4) reprojection
+## ------ 4) reprojection
 ## the download tandem is wgs84 coordinates 
 TSRS_WGS84='+proj=longlat +datum=WGS84' # WGS84 projection 
 LON=$(echo "scale=3; $WEST / 2 + $EAST / 2" | bc)

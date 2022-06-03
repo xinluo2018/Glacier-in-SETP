@@ -2,7 +2,7 @@
 ## author: xin luo
 ## creat: 2022.3.18 # modify: xxxx
 ## des: download dem data from OpenTopography World DEM
-
+## !!! The user should login OpenTopography firstly, because the dem download is requried.
 
 import os
 import sys

@@ -1,7 +1,9 @@
 #! /bin/bath
+## author: xin luo
+## create: 2022.3.18; modify: 2022.5.16
 ## des: some example for fast processing of the remote sensing image.
 ## main gdal tools: gdal_translate, gdal_merge.py, gdalwarp(for reprojection)...
-## note: 
+
 
 ##### shell style
 ## -- gdal_translate
@@ -14,25 +16,28 @@ gdal_translate -tr 1000 1000 -r average -co COMPRESS=LZW $path_in $path_out
 ## gdal_merge.py: the latter image overlap the previous image
 ## '-n -999' means igore value of -999 during image mosaic
 gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
+## below is a method to keep the nodata values during mosaic.
+gdal_merge.py -n -999 -a_nodata -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
+
 
 ### ------ subset by bounds------ 
-## extent=str(ulx) str(uly) str(lrx) str(lry)
-gdal_translate -co COMPRESS=LZW -projwin $extent $path_in $path_out  
+# extent: str(ulx) str(uly) str(lrx) str(lry)
+gdal_translate -projwin -co COMPRESS=LZW $extent $path_in $path_out  
 
 ### ------ subset by .shp file------ 
-gdalwarp -co COMPRESS=LZW -cutline $path_shp $path_input $path_output
+gdalwarp -co COMPRESS=LZW -cutline $path_shp -crop_to_cutline $path_input $path_output
 
 ### ------ resize to specific width and height (resample) ------ 
 gdalwarp -co COMPRESS=LZW -ts $width $height -r bilinear $path_input $path_output
 
-### --------- image calculation ----------
+### --------- band math ----------
 gdal_calc.py -A $path_img --A_band=1 -B $path_img --B_band=2 \
                 --outfile=$path_output --calc="(A*(abs(B-A)<100)-999*(abs(B-A)>100))"  # band math.
 
 
 ### ------ reprojection ------
 ## 1) wgs84 to utm projection
-gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:32644 -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES input.tif output.tif 
+gdalwarp  -overwrite -s_srs EPSG:4326 -t_srs EPSG:32644 -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES input.tif output.tif 
 ## 2) wgs84 to wgs84/egm2008
 # gdalwarp  -s_srs "+proj=longlat +datum=WGS84 +no_def" -t_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids=egm08_25.gtx" input.tif output.tif
 # !gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:4326+3855 input.tif output.tif

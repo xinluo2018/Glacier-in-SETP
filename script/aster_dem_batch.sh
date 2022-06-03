@@ -7,17 +7,17 @@
 ## usage: the input DIR_DATA should contains a sub-directory (namely aster_raw_l1a)
 ## note: !!!the user should login OpenTopography firstly, because the dem download is requried.
 
+## workplace
+cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
+
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/wkunlun-2000
+DIR_DATA=data/aster-stereo/wkunlun-2020
 # while getopts d:z: flag
 # do
 #   case "${flag}" in
 #       d) DIR_DATA=${OPTARG};;
 #   esac
 # done
-
-## parameters configuration
-cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
 SETTING=script/stereo.default
 echo 'stereo.default path:' $SETTING
