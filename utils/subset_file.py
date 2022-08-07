@@ -4,8 +4,9 @@
 
 '''
 example:
-    python subset.py ./input/path/*.h5 -r 90 91 30 31 
+    python subset.py ./input/path/*.h5 -r 90 91 30 31 -t 2008.1 2008.4
 '''
+
 import os
 import h5py 
 import argparse
@@ -31,17 +32,17 @@ def get_args():
             help=('time for data subset'),
             default=[None, None])
     parser.add_argument(
-            '-m', metavar=('mask_file'), dest='mask_file', type=str, nargs='+',
+            '-m', metavar=('mask_file'), dest='mask_file', type=float, nargs='+',
             help=('mask for data subset'),
-            default=None)
+            default=[None])
     parser.add_argument(
             '-c', metavar=('lon','lat'), dest='coord_name', type=str, nargs=2,
             help=('name of x/y variables'),
-            default=['lon', 'lat'])
+            default=['h_lon', 'h_lat'])
     parser.add_argument(
             '-tn', metavar=('time_name'), dest='time_name', type=str, nargs=1,
             help=('name of time variables'),
-            default=['t_year'])
+            default=['t_dyr'])
 
     return parser.parse_args()
 
@@ -94,7 +95,7 @@ def readTiff(path_in):
         return img_array, img_info
 
 def subset(ifile, region_range=[None,None,None,None], time_range=[None, None], \
-                                region_mask=[None,None], time_name=None, coord_name=['lon', 'lat']):
+                            region_mask=[None, None], time_name=None, coord_name=['h_lon', 'h_lat']):
     '''args:
         ifile: input file path
         region_region: [lon_min, lon_max, lat_min, lat_max]
@@ -132,7 +133,7 @@ def subset(ifile, region_range=[None,None,None,None], time_range=[None, None], \
             vars_dict[vname] = vars_dict[vname][idx_time]
 
     ## 3) if region_mask is given
-    if region_mask and vars_dict[lon_name].any():        
+    if region_mask[0] and vars_dict[lon_name].any():     
         #### -- subset by region_mask
         raster_mask, geotrans_mask = region_mask
         row, col = geo2imagexy(x=vars_dict[lon_name], \
