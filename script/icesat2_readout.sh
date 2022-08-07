@@ -1,60 +1,42 @@
 #! /bin/bash 
 ## author: xin luo;
 ## create: 2022.05.15;
-## des: read the download icesat2 data and write out.
-
+## des: 1) readout the download icesat2 data, and
+##      2) subset and write out.
 
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
-data_name=ATL03
-date=202002
-dir_downdata=data/icesat2/download-${data_name}/data_${date}
-dir_procdata=data/icesat2/processed-${data_name}
-path_subs_mask=data/rgi60-wkunlun/rgi60_1305_selected_mask.tif
 
-orbits='A D'
-spots='spot1 spot2 spot3 spot4 spot5 spot6'
+date=2020
+data_name=ATL06
+dir_downdata=./data/icesat/atl06-download/data-${date}
+dir_readout=./data/icesat/atl06-readout
+# path_subs_mask=data/rgi60-wkunlun/rgi60_1305_selected_mask.tif   ## mask file
 
-if [ ! -d $dir_procdata ]; 
+
+if [ ! -d $dir_readout ]; 
 then
-  mkdir $dir_procdata
+  mkdir $dir_readout
 fi
 
-### ---- 1. split icesat2 data into different beams and orbits(ascending/descending).
+### -- 1. readout icesat2 atl03 and atl06 data (selected variables).
 if [ "$data_name" == "ATL03" ]; 
 then
-  python utils/readout03.py $dir_downdata/*${data_name}*.h5 -o $dir_procdata -n 4
+  python utils/read_atl03.py $dir_downdata/*${data_name}*.h5 -o $dir_readout -n 4
 elif [ "$data_name" == "ATL06" ]; 
 then
-  python utils/readout06.py $dir_downdata/*${data_name}*.h5 -o $dir_procdata -n 4
+  python utils/read_atl06.py $dir_downdata/*${data_name}*.h5 -o $dir_readout -n 4
 fi
 
-# ### ---- 2. data merge
-# ##  ---- 2.1. merge multitemporal data
+##  -- 2. Merge all data files
+path_in=$dir_readout/*${data_name}*.h5
+path_out=$dir_readout/${data_name}_${date}.h5 
+if [ -f $path_out ]; then rm $path_out; fi
+python utils/merge_files.py $path_in -o $path_out
 
-for orbit in $orbits
-do
-  for spot in $spots
-  do
-    python utils/merge_files.py $dir_procdata/*${data_name}*_${spot}_${orbit}*.h5 -o $dir_procdata/${data_name}_${spot}_${orbit}.h5
-  done
-done
+# ### -- 3. data subset with rgi60 glacier data 
+# python utils/subset_file.py $dir_readout/${data_name}_${date}.h5 -m $path_subs_mask
 
-# ##  ---- 2.2. Merge beames.
-for orbit in $orbits
-do
-  python utils/merge_files.py $dir_procdata/${data_name}_spot?_${orbit}.h5 -o $dir_procdata/${data_name}_${orbit}.h5
-done
-
-##  ---- 2.3. Merge all beams and orbits
-for orbit in $orbits
-do
-  python utils/merge_files.py $dir_procdata/*${data_name}*_spot*.h5 -o $dir_procdata/${data_name}_${date}.h5  
-done
-
-### ---- 3. data subset
-python utils/subset_file.py $dir_procdata/${data_name}_${date}.h5 -m $path_subs_mask
-
-### ---- 4. delete medium files
-rm $dir_procdata/*A.h5 $dir_procdata/*D.h5 $dir_procdata/*${date}.h5
+## -- 4. delete medium files
+rm $dir_readout/*_readout.h5
 

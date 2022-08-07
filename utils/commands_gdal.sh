@@ -19,7 +19,6 @@ gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_
 ## below is a method to keep the nodata values during mosaic.
 gdal_merge.py -n -999 -a_nodata -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
 
-
 ### ------ subset by bounds------ 
 # extent: str(ulx) str(uly) str(lrx) str(lry)
 gdal_translate -projwin -co COMPRESS=LZW $extent $path_in $path_out  
@@ -33,7 +32,6 @@ gdalwarp -co COMPRESS=LZW -ts $width $height -r bilinear $path_input $path_outpu
 ### --------- band math ----------
 gdal_calc.py -A $path_img --A_band=1 -B $path_img --B_band=2 \
                 --outfile=$path_output --calc="(A*(abs(B-A)<100)-999*(abs(B-A)>100))"  # band math.
-
 
 ### ------ reprojection ------
 ## 1) wgs84 to utm projection
