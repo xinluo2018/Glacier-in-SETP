@@ -1,3 +1,6 @@
+## author: xin luo
+## create: 2020, modify: 2022.1.7
+## des: remote sensing image visualization
 
 import matplotlib.pyplot as plt
 import numpy as np

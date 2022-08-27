@@ -1,9 +1,8 @@
 #! /bin/bath
 ## author: xin luo
-## create: 2022.3.18; modify: 2022.5.16
+## create: 2022.3.18; modify: 2022.8.9
 ## des: some example for fast processing of the remote sensing image.
 ## main gdal tools: gdal_translate, gdal_merge.py, gdalwarp(for reprojection)...
-
 
 ##### shell style
 ## -- gdal_translate
@@ -20,8 +19,8 @@ gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_
 gdal_merge.py -n -999 -a_nodata -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
 
 ### ------ subset by bounds------ 
-# extent: str(ulx) str(uly) str(lrx) str(lry)
-gdal_translate -projwin -co COMPRESS=LZW $extent $path_in $path_out  
+# extent: str(ulx) str(uly) str(lrx) str(lry), e.g., extent='72 38 84 34'
+gdal_translate -projwin $extent -co COMPRESS=LZW $path_in $path_out
 
 ### ------ subset by .shp file------ 
 gdalwarp -co COMPRESS=LZW -cutline $path_shp -crop_to_cutline $path_input $path_output

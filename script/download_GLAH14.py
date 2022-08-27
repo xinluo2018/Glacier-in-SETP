@@ -49,6 +49,7 @@ import math
 import netrc
 import os.path
 import ssl
+import glob
 import sys
 import time
 from getpass import getpass
@@ -66,7 +67,7 @@ version = '034'
 time_start = '2009-01-01T16:00:00Z'
 time_end = '2009-10-11T23:59:59Z'
 bounding_box = '78,36,79,37'
-dir_save = 'data/icesat/glah14-download/tile-36-78'
+dir_save = 'data/icesat/glah14-download/tile-36-78/2009'
 os.chdir(dir_save)
 
 polygon = ''
@@ -448,9 +449,14 @@ def main(argv=None):
                                   filename_filter=filename_filter, quiet=quiet)
 
         cmr_download(url_list, force=force, quiet=quiet)
+        ### remove the .xml file.
+        for file in glob.glob('*.xml'):
+            os.remove(file) 
+
     except KeyboardInterrupt:
         quit()
 
 
 if __name__ == '__main__':
     main()
+    

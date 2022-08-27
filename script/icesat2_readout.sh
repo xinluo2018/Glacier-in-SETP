@@ -6,18 +6,14 @@
 
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
-
-date=2020
-data_name=ATL06
-dir_downdata=./data/icesat/atl06-download/data-${date}
-dir_readout=./data/icesat/atl06-readout
+tile=tile-36-78
+date=202001
+data_name=ATL03
+dir_downdata=./data/icesat/atl03-download/$tile/$date
+dir_readout=./data/icesat/atl03-readout/$tile
 # path_subs_mask=data/rgi60-wkunlun/rgi60_1305_selected_mask.tif   ## mask file
 
-
-if [ ! -d $dir_readout ]; 
-then
-  mkdir $dir_readout
-fi
+if [ ! -d $dir_readout ]; then mkdir $dir_readout; fi
 
 ### -- 1. readout icesat2 atl03 and atl06 data (selected variables).
 if [ "$data_name" == "ATL03" ]; 

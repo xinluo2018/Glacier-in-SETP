@@ -125,7 +125,7 @@ def read_glah14(file_in, dir_out):
         ## Corrections
         d['h_cor'] += d['h_tide'] + d['h_load']  # apply tides cor
         d['h_cor'] += d['h_sat']      # Apply saturation cor
-        d['h_cor'] -= d['h_ellip']    # Convert ellipsoid: h_TP -> h_WGS84
+        d['h_cor'] -= d['h_ellip']    # Convert ellipsoid: h_TOPEX/Poseidon -> h_WGS84
 
 
         #------------------------------------------#
