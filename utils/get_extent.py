@@ -31,6 +31,3 @@ if __name__ == '__main__':
     east = west + im_geotrans[1] * im_col + im_geotrans[2] * im_row
     south = north + im_geotrans[5] * im_row + im_geotrans[4] * im_col
     print(west, east, south, north)
-
-
-

@@ -12,7 +12,7 @@
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/wkunlun-2020
+DIR_DATA=data/aster-stereo/2009-36-78
 # while getopts d:z: flag
 # do
 #   case "${flag}" in

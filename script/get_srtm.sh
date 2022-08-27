@@ -1,7 +1,7 @@
 #! /bin/bash 
 ## author: xin luo;
 ## create: 2022.05.13;
-## des: download SRTM V3.0 dem data. the data is void-filled data
+## des: download and preprocessing the SRTM V3.0 dem data. the data is void-filled data
 ## note: !!!the user should login OpenTopography firstly.
 
 

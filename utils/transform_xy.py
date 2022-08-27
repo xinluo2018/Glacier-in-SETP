@@ -1,8 +1,10 @@
 ### ----- 
 # author: luo xin, 
 # creat: 2021.6.15, modify: 2021.6.23 
+# des: image location transform between different coordinate systems 
 # -----
 
+from code import interact
 import pyproj
 import numpy as np
 
@@ -19,7 +21,7 @@ def coor2coor(srs_from, srs_to, x, y):
     srs_to = pyproj.Proj(int(srs_to))
     return pyproj.transform(srs_from, srs_to, x, y, always_xy=True)
 
-def geo2imagexy(x, y, gdal_trans):
+def geo2imagexy(x, y, gdal_trans, integer=True):
     '''
     des: from georeferenced location (i.e., lon, lat) to image location(col,row).
     input:
@@ -32,7 +34,8 @@ def geo2imagexy(x, y, gdal_trans):
     a = np.array([[gdal_trans[1], gdal_trans[2]], [gdal_trans[4], gdal_trans[5]]])
     b = np.array([x - gdal_trans[0], y - gdal_trans[3]])
     col_img, row_img = np.linalg.solve(a, b)
-    col_img, row_img = np.floor(col_img).astype('int'), np.floor(row_img).astype('int')
+    if integer:
+        col_img, row_img = np.floor(col_img).astype('int'), np.floor(row_img).astype('int')
     return row_img, col_img
 
 def imagexy2geo(row, col, gdal_trans):

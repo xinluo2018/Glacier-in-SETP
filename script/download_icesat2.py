@@ -5,6 +5,7 @@
 
 import os
 import icepyx as ipx
+import glob
 from pprint import pprint
 
 root_proj = '/Users/luo/OneDrive/GitHub/Glacier-in-RGI1305'
@@ -12,10 +13,10 @@ os.chdir(root_proj)
 
 earthdata_uid = '411795604'
 email = 'xinluo_xin@163.com'
-data_type = 'ATL06'
+data_type = 'ATL03'
 spatial_extent = [78, 36, 79, 37]     # rgi13_05
-date_range = ['2020-01-01','2020-12-31']
-dir_save = 'data/icesat/atl06-download/tile-36-78/2020'
+date_range = ['2020-01-01','2020-01-31']
+dir_save = 'data/icesat/atl03-download/tile-36-78/202001'
 
 data_region = ipx.Query(data_type, spatial_extent, date_range)
 print('Product:', data_region.product)
@@ -30,4 +31,5 @@ if not os.path.exists(dir_save):
   print("The new directory is created!")
 
 data_region.download_granules(dir_save)
+
 
