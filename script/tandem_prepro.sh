@@ -10,7 +10,6 @@ DIR_DATA=data/dem-data/tandem-x
 NUMB_DATA=$(ls -d $DIR_DATA/TDM1_DEM*.zip | wc | awk '{print $1}')
 echo "Numb of DEMs to process: " $NUMB_DATA
 
-
 ### ----- 1) Unzip the dem file.
 ls -d ${DIR_DATA}/TDM1_DEM*.zip > $DIR_DATA/list_of_zipfile.txt  # write file_name to .txt file
 N=1
