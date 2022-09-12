@@ -25,7 +25,7 @@ echo 'stereo.default path:' $SETTING
 
 ## set variables
 DEM_PS=30     # unit:m
-TSRS_WGS84='+proj=longlat +datum=WGS84' # WGS84 projection 
+TSRS_WGS84='+proj=longlat +datum=WGS84' # WGS84 projection
 DIR_L1A=$DIR_DATA/aster-raw-L1A
 
 NUMB_DATA=$(ls -d $DIR_L1A/AST_L1A*.zip | wc | awk '{print $1}')
@@ -95,6 +95,7 @@ do
   gdalwarp -overwrite -s_srs "$TSRS_WGS84" -t_srs "$TSRS_UTM" -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES $FILES_TMP/srtm_wgs84.tif $FILES_TMP/srtm_utm.tif
   cp $FILES_TMP/srtm_utm.tif srtm_utm_tmp.tif
 
+  ## mapproject onto the give DEM 
   mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3N.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif
   mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3B.tif $FILES_TMP/parse/run-Band3B.xml $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif
   mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/unzip/*VNIR_Band1*.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band1_utm.tif 

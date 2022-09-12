@@ -2,9 +2,8 @@
 ## author: xin luo; xxxx
 ## create: 2022.03.30; modify: 2022.8.10
 ## des: DEMs mosaic for generated dems in west kunlun. 
-##      1）the outlier data in aster dem are filtered with auxiliary srtm-c dem data.
-##      2）the dems are mosaicked with a given prefered acquisition date.
-##      3) the date of the masaic image is mapped.
+##      1）the dems are mosaicked with a given prefered acquisition date.
+##      2) the date of the masaic image is mapped.
 ## usage: the input DIR_DATA should contains a sub-directory (namely aster_dem)
 
 ### get data directory
@@ -12,7 +11,7 @@ DIR_DATA=data/aster-stereo/2009-36-78
 
 ## parameters configuration
 cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
-date_center=0.54      # priority date, e.g., 0.5 represent the middle of a year.
+date_center=0.583      # priority date, e.g., 0.5 represent the middle of a year.
 EXTENT_SUBS='78 37 79 36'  # wgs84 coordinate system
 
 ## -----1) get data file information
