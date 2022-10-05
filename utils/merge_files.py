@@ -23,7 +23,6 @@ import argparse
 import numpy as np
 from glob import glob
 
-
 def get_args():
     """ Pass command-line arguments. """
     parser = argparse.ArgumentParser(

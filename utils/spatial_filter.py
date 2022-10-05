@@ -1,6 +1,6 @@
 # author: Fernando Paolo, 
 # modify: xin luo, 2021.8.15
-# des: filtering data within a 2d space
+# des: filtering outlier data within a local 2d sub-space
 
 import numpy as np
 from scipy import stats
@@ -11,7 +11,7 @@ def spatial_filter(x, y, z, dx, dy, sigma=3.0):
     arg:
         x, y: coord_x and coord_y (m)
         z: value
-        dx, dy: resolution in x (m) and y (m), represents the range of the region.
+        dx, dy: represents the range of the local region.
         n_sigma: cut-off value
         thres: max absolute value of data
     return: 
