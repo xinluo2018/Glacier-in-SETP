@@ -1,5 +1,5 @@
-# Glacier-in-RGI1305
-Glacier change monitoring by using aster stereo image and icesat-2 and satellite images.
+# Glacier-in-SETP
+Glacier change monitoring for the Southeastern Tibetan Plateau by using aster stereo image and icesat-2 and satellite images.
 
 ### 1. data prepare
 #### - 1.1 download aster stereo images on the website: https://search.earthdata.nasa.gov/search.
