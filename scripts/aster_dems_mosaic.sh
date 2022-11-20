@@ -4,29 +4,36 @@
 ## des: DEMs mosaic for generated dems in west kunlun. 
 ##      1）the dems are mosaicked with a given prefered acquisition date.
 ##      2) the date of the masaic image is mapped.
-## usage: the input DIR_DATA should contains a sub-directory (namely aster_dem)
+## usage: 
 
-### get data directory
-DIR_DATA=data/aster-stereo/2009-36-78
 
-## parameters configuration
-cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
-date_center=0.583      # priority date, e.g., 0.5 represent the middle of a year.
-EXTENT_SUBS='78 37 79 36'  # wgs84 coordinate system
+cd /home/xin/Desktop/developer-luo/Glacier-in-SETP
 
-## -----1) get data file information
-NAME_FILE=$(basename $DIR_DATA)
-YYYY=$(echo ${NAME_FILE:0:4}) ## year of the dem data
-# ## get dems path
-PATH_DEMS=$(ls $DIR_DATA/aster_dem/VNIR*/run-DEM.tif)
+## Parameters configuration
+YYYY=2020
+left=96; right=$(expr $left + 1)
+bottom=29; up=$(expr $bottom + 1)
+date_center=0.583      # priority date, e.g., 0.5 represents the middle of a year; 0.583 represents July 1.
+DIR_DATA=data/aster-stereo/SETP-$YYYY
+DIR_Tile=$DIR_DATA/tiles-dem/tile-$bottom-$left
+mkdir -p $DIR_Tile      ### create the directory
+
+## seach the images.
+# paths_img=data/aster-stereo/SETP-2020/aster-dem/*/run-DEM.tif
+
+## -----1) get dem paths
+Path_imgs=$DIR_DATA/aster-dem/*/run-DEM.tif
+PATH_DEMS=$(python utils/imgs_in_extent.py -imgs $Path_imgs -e $left $right $bottom $up)
 
 ## -----2) generate date images corresponding to dems images
 echo 'Generate dems date image:'
 for PATH_DEM in $PATH_DEMS;
 do
   PATH_DEM_DATE=$(dirname $PATH_DEM)/$(basename $PATH_DEM .tif)_date.tif
-  date=$(echo $(dirname $PATH_DEM | xargs basename | cut -d '_' -f 2))
-  gdal_calc.py -A $PATH_DEM --outfile=$PATH_DEM_DATE --calc="($date*(A>0))"   # band math.
+  if [ ! -f "$PATH_DEM_DATE" ]; then
+    date=$(echo $(dirname $PATH_DEM | xargs basename | cut -d '_' -f 2))
+    gdal_calc.py -A $PATH_DEM --outfile=$PATH_DEM_DATE --calc="($date*(A>0))"   # band math.
+  fi
 done
 
 ## -----3) sort the path_dems by the date which near to the given date_center. 
@@ -35,31 +42,36 @@ for PATH_DEM in $PATH_DEMS;
 do
   date=.$(dirname $PATH_DEM | xargs basename | cut -d '.' -f 2 )
   dif=$(echo $date - $date_center | bc | sed 's/-//')
-  echo $dif $PATH_DEM >> $DIR_DATA/aster_dem/list_dems.txt
+  echo $dif $PATH_DEM >> $DIR_Tile/list_dems.txt
 done
-cat $DIR_DATA/aster_dem/list_dems.txt | sort -r > $DIR_DATA/aster_dem/list_dems_sort.txt
-PATH_DEMS_SORT=$(cut -d ' ' -f 2 $DIR_DATA/aster_dem/list_dems_sort.txt)
+cat $DIR_Tile/list_dems.txt | sort -r > $DIR_Tile/list_dems_sort.txt
+PATH_DEMS_SORT=$(cut -d ' ' -f 2 $DIR_Tile/list_dems_sort.txt)
 echo 'Images for mosaic:'
 echo $PATH_DEMS_SORT | xargs -n 1
-rm $DIR_DATA/aster_dem/list_dems.txt
-rm $DIR_DATA/aster_dem/list_dems_sort.txt
+rm $DIR_Tile/list_dems.txt
+# rm $DIR_Tile/list_dems_sort.txt
 
 ## ----- 4) dems mosaic
-PATH_DEMS_MOSAIC=$DIR_DATA/dems_${YYYY}_mosaic.tif  
+PATH_DEMS_MOSAIC=$DIR_Tile/dems_mosaic.tif  
 echo 'dems mosaic:'
 gdal_merge.py -co COMPRESS=LZW -o $PATH_DEMS_MOSAIC $PATH_DEMS_SORT
 echo 'dems subset:'
+TSRS_proj4=$(gdalsrsinfo -o proj4 $PATH_DEMS_MOSAIC);   # UTM projection of the mosaic image 
+UTM_ZONE=$(echo ${TSRS_proj4:17:2})
+TSRS_UTM='+proj=utm +zone='$UTM_ZONE' +ellps=WGS84 +datum=WGS84 +units=m +no_defs' # UTM projection 
 TSRS_WGS84='+proj=longlat +datum=WGS84'       # WGS84 projection 
-TSRS_UTM=$(gdalsrsinfo -o proj4 $PATH_DEMS_MOSAIC);   # UTM projection of the mosaic image 
-PATH_DEMS_MOSAIC_WGS84=$DIR_DATA/dems_${YYYY}_mosaic_wgs84.tif   
-PATH_DEMS_SUBS=$DIR_DATA/dems_${YYYY}_mosaic_subs.tif   
-gdalwarp -overwrite -s_srs "$TSRS_UTM" -t_srs "$TSRS_WGS84" -r cubic -co COMPRESS=LZW $PATH_DEMS_MOSAIC $PATH_DEMS_MOSAIC_WGS84 # re-projection
-gdal_translate -projwin $EXTENT_SUBS -co COMPRESS=LZW $PATH_DEMS_MOSAIC_WGS84 $PATH_DEMS_SUBS
+PATH_DEMS_MOSAIC_WGS84=$DIR_Tile/dems_mosaic_wgs84.tif   
+PATH_DEMS_SUBS=$DIR_Tile/dems_mosaic_wgs84_subs.tif
+echo $TSRS_UTM 
+echo $TSRS_WGS84
+gdalwarp -overwrite -s_srs "$TSRS_UTM" -t_srs "$TSRS_WGS84" -r cubic -co COMPRESS=LZW $PATH_DEMS_MOSAIC $PATH_DEMS_MOSAIC_WGS84  # re-projected to wgs84
+extent="${left} ${up} ${right} ${bottom}" 
+gdal_translate -projwin $extent -co COMPRESS=LZW $PATH_DEMS_MOSAIC_WGS84 $PATH_DEMS_SUBS    ## subseting
 rm $PATH_DEMS_MOSAIC; 
 rm $PATH_DEMS_MOSAIC_WGS84; 
 
 ## ----- 5) dems date mosaic and subset
-PATH_DEMS_DATE_MOSAIC=$DIR_DATA/dems_date_${YYYY}_mosaic.tif  ## finally to be saved.
+PATH_DEMS_DATE_MOSAIC=$DIR_DATA/dems_date_mosaic.tif  ## finally to be saved.
 PATH_DEMS_DATE_SORT=''
 for PATH_DEM_SORT in $PATH_DEMS_SORT;
 do
@@ -69,10 +81,10 @@ done
 echo 'dems date mosaic:'
 gdal_merge.py -co COMPRESS=LZW -o $PATH_DEMS_DATE_MOSAIC $PATH_DEMS_DATE_SORT
 echo 'dems date subset:'
-PATH_DEMS_DATE_MOSAIC_WGS84=$DIR_DATA/dems_date_${YYYY}_mosaic_wgs84.tif
-PATH_DEMS_DATE_SUBS=$DIR_DATA/dems_date_${YYYY}_mosaic_subs.tif   
+PATH_DEMS_DATE_MOSAIC_WGS84=$DIR_DATA/dems_date_mosaic_wgs84.tif
+PATH_DEMS_DATE_SUBS=$DIR_DATA/dems_mosaic_date_subs.tif   
 gdalwarp -overwrite -s_srs "$TSRS_UTM" -t_srs "$TSRS_WGS84" -r cubic -co COMPRESS=LZW $PATH_DEMS_DATE_MOSAIC $PATH_DEMS_DATE_MOSAIC_WGS84 # re-projection
-gdal_translate -projwin $EXTENT_SUBS -co COMPRESS=LZW $PATH_DEMS_DATE_MOSAIC_WGS84 $PATH_DEMS_DATE_SUBS
-rm $DIR_DATA/aster_dem/*/*_date.tif
+gdal_translate -projwin $extent -co COMPRESS=LZW $PATH_DEMS_DATE_MOSAIC_WGS84 $PATH_DEMS_DATE_SUBS
+rm $DIR_DATA/aster-dem/*/*_date.tif
 rm $PATH_DEMS_DATE_MOSAIC; 
-rm $PATH_DEMS_DATE_MOSAIC_WGS84; 
+rm $PATH_DEMS_DATE_MOSAIC_WGS84;

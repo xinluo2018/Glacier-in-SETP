@@ -1,5 +1,5 @@
 __pycache__/
-.vscode/
+.vscode
 data/*
 **/.DS_Store
 # data/TPlateau_boundary/*

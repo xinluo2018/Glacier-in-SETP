@@ -4,7 +4,6 @@
 ################################################################
 
 # Pre-alignment options
-#
 # Available choices are (however not all are supported by all sessions):
 #    none           (Recommended for anything map projected)
 #    epipolar       (Recommended for Pinhole Sessions)
@@ -18,7 +17,7 @@ alignment-method none
 # 0 - None
 # 1 - Subtracted Mean
 # 2 - Laplacian of Gaussian (recommended)
-prefilter-mode 2
+prefilter-mode 0
 
 # Kernel size (1-sigma) for pre-processing
 # Recommend 1.4 px for Laplacian of Gaussian
@@ -36,24 +35,25 @@ prefilter-kernel-width 1.4
 # asp_mgm (or use '2') - the ASP implementation of MGM.
 # asp_final_mgm (or use '3') - ASP MGM at the the finest level.
 # mgm - the originally published MGM implementation.
-stereo-algorithm asp_bm    ## default
+# stereo-algorithm asp_bm     ## default
+stereo-algorithm asp_sgm      ## selected
 # stereo-algorithm asp_mgm    ## recommend, but very slow.
 
 # Dealing with clouds and long run-times  
 corr-timeout 600   ## for asp_bm alogorithm, default is 900 seconds
-ip-filter-using-dem srtm_utm_tmp.tif 150  ## the srtm_utm_tmp.tif is generated during the processing.
+ip-filter-using-dem srtm_utm_tmp.tif 150   ## the srtm_utm_tmp.tif is obtained during the processing.
 
 # Select a cost function to use for initialization:
-# (default = 2 for ASP_BM and 4 for ASP_SGM and ASP_MGM)
+# (default = 2)
 # 0 - absolute difference (fast)
 # 1 - squared difference  (faster .. but usually bad)
 # 2 - normalized cross correlation (recommended)
 # cost-mode 0
-cost-mode 2     # recommended
+cost-mode 4
 
 # Initialization step: correlation kernel size
 # corr-kernel 21 21   # default
-corr-kernel 15 15  # finer
+corr-kernel 7 7  # finer
 
 # Initialization step: correlation window size
 # corr-search -80 -2 20 2

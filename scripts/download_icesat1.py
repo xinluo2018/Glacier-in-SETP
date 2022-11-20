@@ -29,7 +29,7 @@ def get_args():
     description = "download the icesat1/glah14 data."
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-            '-e', metavar=('w','s','e','n'), dest='extent', type=int, nargs=4,
+            '-e', metavar=('w','s','e','n'), dest='extent', type=float, nargs=4,
             help=('extent for data downloading'),
             default=[91, 27, 92, 28])
     parser.add_argument(

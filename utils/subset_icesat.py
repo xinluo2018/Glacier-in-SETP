@@ -95,7 +95,7 @@ def readTiff(path_in):
     else:
         return img_array, img_info
 
-def subset(ifile, extent=[None,None,None,None], time_range=[None, None], \
+def subset(ifile, extent=[None, None, None, None], time_range=[None, None], \
                             extent_mask=[None, None], time_name=None, coord_name=['h_lon', 'h_lat']):
     '''args:
         ifile: input file path

@@ -9,34 +9,29 @@
 ## note: !!!the user should login OpenTopography firstly, because the dem download is requried.
 
 ## workplace
-cd /Users/luo/Library/CloudStorage/OneDrive-Personal/GitHub/Glacier-in-RGI1305
+cd /home/xin/Desktop/developer-luo/Glacier-in-SETP
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/2009-36-78
-# while getopts d:z: flag
-# do
-#   case "${flag}" in
-#       d) DIR_DATA=${OPTARG};;
-#   esac
-# done
+DIR_DATA=data/aster-stereo/SETP-2007
 
-SETTING=script/stereo.default
+SETTING=scripts/stereo.default
 echo 'stereo.default path:' $SETTING
 
 ## set variables
 DEM_PS=30     # unit:m
 TSRS_WGS84='+proj=longlat +datum=WGS84' # WGS84 projection
-DIR_L1A=$DIR_DATA/aster-raw-L1A
+DIR_L1A=$DIR_DATA/aster-raw-l1a
 
 NUMB_DATA=$(ls -d $DIR_L1A/AST_L1A*.zip | wc | awk '{print $1}')
-echo "Numb of DEMs to process: " $NUMB_DATA
+echo "Numb of Pair-wise images to process: " $NUMB_DATA
 
 ls -d ${DIR_L1A}/AST_L1A*.zip > $DIR_DATA/list_of_zipfile.txt  # write file_name to .txt file
 
-N=1
+# N=1   # start from 1
+N=6   # start from 1
 
 while [ $N -le $NUMB_DATA ]
-# while [ $N -le 2 ]
+# while [ $N -le 1 ]
 
 do
   echo 'processing ---> data' $N
@@ -50,15 +45,17 @@ do
   HH=$(echo ${NAME_FILE:19:2})
   MN=$(echo ${NAME_FILE:21:2})
   SS=$(echo ${NAME_FILE:23:2})
+  echo 'date......'
+  echo $YYYY $MM $DD
   HOURDEC=$(echo "($HH+($MN/60.)+($SS/3600.))/24." | bc -l)
-  # DOY=$(date -d "$YYYY-$MM-$DD" +%j)   ## for linux os
-  DOY=$(date -j -f "%Y-%m-%d" $YYYY-$MM-$DD +%j)    ## for mac os
+  DOY=$(date -d "$YYYY-$MM-$DD" +%j)   ## for linux os
+  # DOY=$(date -j -f "%Y-%m-%d" $YYYY-$MM-$DD +%j)    ## for mac os
   DATE_DECIMAL=$(echo "$YYYY+($DOY+$HOURDEC)/365.25" | bc -l | awk '{printf "%.8f\n",$0}')
   #  create new directory (store 1) projected aster image, 
   #  2) generated dem data, 3) medium temporal data)
   FILES_TMP=$DIR_DATA/tmp_$DATE_DECIMAL
-  DIR_IMG_REPROJ=$DIR_DATA/aster_reproj/VNIR_$DATE_DECIMAL  # reproject aster image
-  DIR_DEM=$DIR_DATA/aster_dem/VNIR_$DATE_DECIMAL
+  DIR_IMG_REPROJ=$DIR_DATA/aster-reproj/VNIR_$DATE_DECIMAL  # reproject aster image
+  DIR_DEM=$DIR_DATA/aster-dem/VNIR_$DATE_DECIMAL
   mkdir $FILES_TMP $DIR_IMG_REPROJ $DIR_DEM
 
   ### 2) uzip l1a data
@@ -67,19 +64,20 @@ do
   unzip -q $PATH_FILE -d $FILES_TMP/unzip  # unzip the raw l1a aster data
 
   ## 3) parse the l1a aster data
-  aster2asp $FILES_TMP/unzip -o $FILES_TMP/parse/run
-  ## 4) reproject l1a vnir image
-  ## re-projected the l1a VNIR bands (15 m, bands of green, red, nir)  
-  ## 4.1) to wgs84
-  mapproject -t rpc --t_srs "$TSRS_WGS84" WGS84 $FILES_TMP/parse/run-Band3N.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif
+  aster2asp $FILES_TMP/unzip -o $FILES_TMP/parse/VNIR
+
+  # 4) reproject l1a vnir image
+  # re-projected the l1a VNIR bands (15 m, bands of green, red, nir)  
+  # 4.1) to wgs84
+  mapproject -t rpc --t_srs "$TSRS_WGS84" WGS84 $FILES_TMP/parse/VNIR-Band3N.tif $FILES_TMP/parse/VNIR-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif
 
   ## 4.2) get image extent and download srtm dem data 
-  EXTENT,_=$(python utils/get_extent.py $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif)  
-  echo EXTENT
+  EXTENT=$(python utils/get_extent.py $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif)  
+  echo $EXTENT
   rm $DIR_IMG_REPROJ/VNIR-Band3N_wgs84.tif    # used for ip-filter-using-dem in stereo.default.
   read -a EXTENT <<< $EXTENT
-  WEST=${EXTENT[1]}; EAST=${EXTENT[2]}
-  SOUTH=${EXTENT[3]}; NORTH=${EXTENT[4]}
+  WEST=${EXTENT[0]}; EAST=${EXTENT[1]}
+  SOUTH=${EXTENT[2]}; NORTH=${EXTENT[3]}
   WEST_INT=$((${WEST%.*}+1)); EAST_INT=$((${EAST%.*}+1))
   if [ $WEST_INT -gt 180 ]; then WEST=$(echo $WEST - 360 | bc); fi ## longitude offset from [0,360] to [-180,180].
   if [ $EAST_INT -gt 180 ]; then EAST=$(echo $EAST - 360 | bc); fi
@@ -91,16 +89,17 @@ do
 
   TSRS_UTM='+proj=utm +zone='$UTM_ZONE' +ellps=WGS84 +datum=WGS84 +units=m +no_defs' # UTM projection 
   
-  python utils/get_dem.py SRTMGL1_E $WEST $EAST $SOUTH $NORTH --out $FILES_TMP/srtm_wgs84.tif
+  echo $WEST $EAST $SOUTH $NORTH
+  python utils/get_dem.py SRTMGL1_E --bounds $WEST $EAST $SOUTH $NORTH --out $FILES_TMP/srtm_wgs84.tif
    # # ## 4.3) to utm (both for dem data and aster image)
   gdalwarp -overwrite -s_srs "$TSRS_WGS84" -t_srs "$TSRS_UTM" -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES $FILES_TMP/srtm_wgs84.tif $FILES_TMP/srtm_utm.tif
   cp $FILES_TMP/srtm_utm.tif srtm_utm_tmp.tif
 
   ## mapproject onto the give DEM 
-  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3N.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif
-  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/run-Band3B.tif $FILES_TMP/parse/run-Band3B.xml $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif
-  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/unzip/*VNIR_Band1*.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band1_utm.tif 
-  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/unzip/*VNIR_Band2*.tif $FILES_TMP/parse/run-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band2_utm.tif 
+  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/VNIR-Band3N.tif $FILES_TMP/parse/VNIR-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif
+  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/parse/VNIR-Band3B.tif $FILES_TMP/parse/VNIR-Band3B.xml $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif
+  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/unzip/*VNIR_Band1*.tif $FILES_TMP/parse/VNIR-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band1_utm.tif 
+  mapproject -t rpc --t_srs "$TSRS_UTM" $FILES_TMP/srtm_utm.tif $FILES_TMP/unzip/*VNIR_Band2*.tif $FILES_TMP/parse/VNIR-Band3N.xml $DIR_IMG_REPROJ/VNIR-Band2_utm.tif 
   python utils/lay_stack.py  $DIR_IMG_REPROJ/VNIR-Band1_utm.tif $DIR_IMG_REPROJ/VNIR-Band2_utm.tif \
                              $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif $DIR_IMG_REPROJ/VNIR-LaySta_utm.tif 
 
@@ -110,7 +109,7 @@ do
   ##       try set parameters in stereo.default file
   parallel_stereo -t astermaprpc -s $SETTING --skip-rough-homography \
                       $DIR_IMG_REPROJ/VNIR-Band3N_utm.tif $DIR_IMG_REPROJ/VNIR-Band3B_utm.tif \
-                      $FILES_TMP/parse/run-Band3N.xml $FILES_TMP/parse/run-Band3B.xml \
+                      $FILES_TMP/parse/VNIR-Band3N.xml $FILES_TMP/parse/VNIR-Band3B.xml \
                       $FILES_TMP/pc_utm_out/run $FILES_TMP/srtm_utm.tif
 
   # 6) covert cloud point file to dem image

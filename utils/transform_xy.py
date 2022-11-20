@@ -17,9 +17,8 @@ def coor2coor(srs_from, srs_to, x, y):
     return:
         x-coord and y-coord in srs_to 
     """
-    srs_from = pyproj.Proj(int(srs_from))
-    srs_to = pyproj.Proj(int(srs_to))
-    return pyproj.transform(srs_from, srs_to, x, y, always_xy=True)
+    transformer = pyproj.Transformer.from_crs(int(srs_from), int(srs_to), always_xy=True)
+    return transformer.transform(x,y)
 
 def geo2imagexy(x, y, gdal_trans, integer=True):
     '''

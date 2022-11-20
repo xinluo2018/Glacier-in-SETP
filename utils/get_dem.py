@@ -49,7 +49,7 @@ def get_args():
             'demtype', metavar='demtype', type=str, nargs='+',
             help='type of DEM to fetch (e.g., COP30, SRTMGL1, SRTMGL1_E')
     parser.add_argument(
-            'bounds', metavar=('w','e','s','n'), type=float, nargs=4,
+            '--bounds', metavar=('w','e','s','n'), type=float, nargs=4,
             help=('region for data download'))
     parser.add_argument(
             '--apikey', metavar='apikey', type=str, nargs='+',
