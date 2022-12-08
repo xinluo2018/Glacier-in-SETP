@@ -42,6 +42,7 @@ stereo-algorithm asp_sgm      ## selected
 # Dealing with clouds and long run-times  
 corr-timeout 600   ## for asp_bm alogorithm, default is 900 seconds
 ip-filter-using-dem srtm_utm_tmp.tif 150   ## the srtm_utm_tmp.tif is obtained during the processing.
+elevation-limit 0 9000  ## remove the outlier height values
 
 # Select a cost function to use for initialization:
 # (default = 2)

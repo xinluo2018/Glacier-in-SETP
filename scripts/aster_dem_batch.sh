@@ -12,7 +12,7 @@
 cd /home/xin/Desktop/developer-luo/Glacier-in-SETP
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/SETP-2007
+DIR_DATA=data/aster-stereo/SETP-2018
 
 SETTING=scripts/stereo.default
 echo 'stereo.default path:' $SETTING
@@ -27,8 +27,8 @@ echo "Numb of Pair-wise images to process: " $NUMB_DATA
 
 ls -d ${DIR_L1A}/AST_L1A*.zip > $DIR_DATA/list_of_zipfile.txt  # write file_name to .txt file
 
-# N=1   # start from 1
-N=6   # start from 1
+N=1   # start from 1
+# N=16   # start from 1
 
 while [ $N -le $NUMB_DATA ]
 # while [ $N -le 1 ]

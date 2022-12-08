@@ -4,7 +4,7 @@
 # des: download the icesat1/glah14 data. the script was refer to the icesat1 data search website.
 ## !!note: the downloaded icesat1 data contains the full-track data (not only the given-extent data).
 ##         this is different from the downloaded icesat2 data.
-## usage: python download_icesat2.py or python download_icesat1.py -e 91 27 92 28 -t 2009-01-01 2009-12-31
+## usage: python download_icesat1.py or python download_icesat1.py -e 91 27 92 28 -t 2009-01-01 2009-12-31
 
 import getopt
 import sys

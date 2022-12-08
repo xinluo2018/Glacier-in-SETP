@@ -12,7 +12,7 @@ def coor2coor(srs_from, srs_to, x, y):
     """
     Transform coordinates from srs_from to srs_to
     input:
-        srs_from and srs_to are EPSG number (e.g., 4326, 3031)
+        srs_from and srs_to, are EPSG number (e.g., 4326, 3031)
         x and y are x-coord and y-coord corresponding to srs_from and srs_to    
     return:
         x-coord and y-coord in srs_to 
@@ -24,9 +24,10 @@ def geo2imagexy(x, y, gdal_trans, integer=True):
     '''
     des: from georeferenced location (i.e., lon, lat) to image location(col,row).
     input:
-        gdal_proj: obtained by gdal.Open() and .GetGeoTransform(), or by geotif_io.readTiff()['geotrans']
         x: project or georeferenced x, i.e.,lon
         y: project or georeferenced y, i.e., lat
+        gdal_trans: wgs84 coordinate systems of the specific image, 
+                    obtained by gdal.Open() and .GetGeoTransform(), or by geotif_io.readTiff()['geotrans']
     return: 
         image col and row corresponding to the georeferenced location.
     '''

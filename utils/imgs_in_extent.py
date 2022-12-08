@@ -50,7 +50,7 @@ def imgs_in_extent(paths_img, extent):
   '''
   des: selected imgs that all in the given extent.
   arg:
-    paths_img: images paths;
+    paths_img: list, images paths;
     extent: the given extent. list -> [left, right, bottom, up]
   '''
   paths_imgs_extent = []
