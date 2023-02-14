@@ -13,7 +13,7 @@ def crop_to_extent(path_img, extent, size_target=None, path_save=None):
     arg:
         image: the image to be croped; np.array().
         extent: extent to which image should be croped;
-                list/tuple,(xmin,xmax,ymin,ymax). 
+                list/tuple,(left, right, down, up). 
         size_target: size to which image should be croped 
               list/tuple, (row, col)
     return: 

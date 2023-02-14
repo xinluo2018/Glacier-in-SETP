@@ -19,7 +19,7 @@ gdal_merge.py -init 0 -n -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_
 gdal_merge.py -n -999 -a_nodata -999 -co COMPRESS=LZW -o $path_out $path_in_1 $path_in_2 $path_in_3
 
 ### ------ subset by bounds------ 
-# extent: str(ulx) str(uly) str(lrx) str(lry), e.g., extent='72 38 84 34'
+# extent: str(ulx, left) str(uly, up) str(lrx, right) str(lry, bottom), e.g., extent='72 38 84 34'
 gdal_translate -projwin $extent -co COMPRESS=LZW $path_in $path_out
 
 ### ------ subset by .shp file------ 
@@ -43,7 +43,7 @@ gdalwarp  -overwrite -s_srs EPSG:4326 -t_srs EPSG:32644 -tr 30 30 -r cubic -co C
 ## 4) wgs84/egm96 to wgs84
 # !gdalwarp  -s_srs "+proj=longlat +datum=WGS84 +geoidgrids=egm96_15.gtx" -t_srs "+proj=longlat +datum=WGS84 +no_defs" input.tif output.tif
 
-##### python style
+##### python style example
 ```python
 import os
 ## extent = 'str(ulx) str(uly) str(lrx) str(lry)'

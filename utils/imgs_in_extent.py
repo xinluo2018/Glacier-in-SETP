@@ -1,5 +1,5 @@
 ## author: xin luo 
-## creat: 2022.9.30
+## creat: 2022.9.30, modify: 2023.2.10
 ## des: select images in the given extent.
 ## usage: python utils/imgs_in_extent.py -imgs $paths_img -e $left $right $bottom $up
 
@@ -48,21 +48,27 @@ def get_extent(path_img):
 
 def imgs_in_extent(paths_img, extent):
   '''
-  des: selected imgs that all in the given extent.
+  des: selected imgs that in the given extent.
   arg:
     paths_img: list, images paths;
-    extent: the given extent. list -> [left, right, bottom, up]
+    extent: the given extent(wgs84). list -> [left, right, bottom, up]
   '''
   paths_imgs_extent = []
   for path_img in paths_img:
     extent_img, espg_code = get_extent(path_img)    
     xs = (extent_img[0], extent_img[1])
     ys = (extent_img[2], extent_img[3])
-    lons_img, lats_img = coor2coor(srs_from=espg_code, srs_to='4326', x=xs, y=ys)
-    lon_in = extent[0]<lons_img[0]<extent[1] or extent[0]<lons_img[1]<extent[1]
-    lat_in = extent[2]<lats_img[0]<extent[3] or extent[2]<lats_img[1]<extent[3]
-    img_in = lon_in and lat_in
-    if img_in is True:
+    if espg_code != '4326':
+      lons_img, lats_img = coor2coor(srs_from=espg_code, srs_to='4326', x=xs, y=ys)
+    else: 
+      lons_img, lats_img = xs, ys
+
+    lon_in_left = lons_img[1]<extent[0]       ### the case that image is on the left of the extent
+    lon_in_right = lons_img[0]>extent[1]
+    lat_in_up = lats_img[0]>extent[3]
+    lat_in_down = lats_img[1]<extent[2]
+    img_in = lon_in_left or lon_in_right or lat_in_up or lat_in_down    ## for each case, there is no overlap between the image and extent. 
+    if img_in is False:
       paths_imgs_extent.append(path_img)
   return paths_imgs_extent
 

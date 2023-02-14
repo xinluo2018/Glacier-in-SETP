@@ -1,5 +1,5 @@
 ## author: xin luo 
-## creat: 2022.3.16; modify: 2022.3.30
+## creat: 2022.3.16; modify: 2023.2.12
 ## des: layer stacking for remote sensing images
 
 from osgeo import gdal
@@ -7,13 +7,15 @@ from osgeo import osr
 import numpy as np
 import argparse
 
-def lay_stack(path_imgs, path_out, union=True, res=None):
+def lay_stack(path_imgs, path_out, extent_mode='union', res=None):
     '''
     input:
     path_imgs: list, contains the paths of bands/imgs to be stacked
     path_out: str, the output path of the layer stacked image
-    union: bool, if true, the output extent is the extents union of input images. 
-            otherwise, the output extent is the extents intersection of input images.
+    extent_mode: string, 'union', 'intersection' and 'img_1';
+                 if union, true, the output extent is the extents union of input images. 
+                 esif intersection, the output extent is the extents intersection of input images.
+                 esif img_1, the output extent is the extents of input image 1.
     res: resolution of the layer stacked image. if not set, \
          the resolution of the first image of path_imgs is the default.
     note: the first image in the path_imgs is the reference image.
@@ -34,6 +36,7 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
         up = im_geotrans[3]
         right = left + im_geotrans[1] * im_x + im_geotrans[2] * im_y
         bottom = up + im_geotrans[5] * im_y + im_geotrans[4] * im_x
+        if i == 0: extent_0 = [left, right, up, bottom]
         if left_min > left: left_min = left; 
         if right_min > right: right_min = right
         if up_min > up: up_min = up
@@ -42,9 +45,11 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
         if right_max < right: right_max = right
         if up_max < up: up_max = up
         if bottom_max < bottom: bottom_max = bottom
-    if union == True:
+    if extent_mode == 'img_1':
+        extent = extent_0
+    elif extent_mode == 'union':
         extent = [left_min, right_max, up_max, bottom_min]
-    else:
+    elif extent_mode == 'intersection':
         extent = [left_max, right_min, up_min, bottom_max]
 
     if res is not None:   # update the dx and dy
@@ -78,7 +83,6 @@ def lay_stack(path_imgs, path_out, union=True, res=None):
         if(img_stack!= None):
             img_stack.SetGeoTransform(base_geotrans)       # 
             img_stack.SetProjection(base_proj)      # 
-
         for i_band in range(base_n):
             img_stack.GetRasterBand(i_band+1).WriteArray(base_img.GetRasterBand(i_band+1).ReadAsArray())
         for i_band in range(stack_n):
@@ -102,9 +106,9 @@ def get_args():
             'path_out', metavar='path_out', type=str, nargs='+',
             help='the output path of the layer stacked image')
     parser.add_argument(
-            '--union',
-            choices=('True','False'),
-            default='True')
+            '--extent_mode',
+            choices=('union','intersection', 'img_1'),
+            default='union')
     parser.add_argument(
             '--resolution', type=int, nargs=1,
             help='resolution of the output image',
@@ -118,7 +122,7 @@ if __name__ == '__main__':
     args = get_args()
     path_imgs = args.path_imgs
     path_out = args.path_out[0]
-    union = args.union
+    extent_mode = args.extent_mode
     res = args.resolution[0]
-    lay_stack(path_imgs, path_out, union, res)
+    lay_stack(path_imgs, path_out, extent_mode, res)
 

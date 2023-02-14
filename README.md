@@ -27,6 +27,5 @@ Glacier change monitoring for the Southeastern Tibetan Plateau by using aster st
 #### - By using the notebooks/dem_evaluate_atl06.ipynb and notebooks/dem_evaluate_galh14.ipynb.
 
 ## To do
-#### modify the scripts/download_icesat1.py. and add subset module in the new script.
-
-
+1) modify the scripts/download_icesat1.py. and add subset module in the new script.
+2) mask out the data/cryotempo-points/2021/cryotempo_points_merge.h5 by using data/rgi60/rgi60_setp_mask.tif

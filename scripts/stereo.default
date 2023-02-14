@@ -11,18 +11,17 @@
 #    affineepipolar (Recommended for ISIS narrow-angle and DG sessions)
 alignment-method none
 
-
 # Select a preprocessing filter (Used only with the asp_bm algorithm):
 #
 # 0 - None
 # 1 - Subtracted Mean
 # 2 - Laplacian of Gaussian (recommended)
-prefilter-mode 0
+# prefilter-mode 2
 
 # Kernel size (1-sigma) for pre-processing
 # Recommend 1.4 px for Laplacian of Gaussian
 # Recommend 25 px for Subtracted Mean
-prefilter-kernel-width 1.4
+# prefilter-kernel-width 1.4
 
 # 2. Integer Correlation / stereo_corr
 ################################################################
@@ -36,25 +35,26 @@ prefilter-kernel-width 1.4
 # asp_final_mgm (or use '3') - ASP MGM at the the finest level.
 # mgm - the originally published MGM implementation.
 # stereo-algorithm asp_bm     ## default
-stereo-algorithm asp_sgm      ## selected
+stereo-algorithm asp_sgm      ## selected by ye zhen
 # stereo-algorithm asp_mgm    ## recommend, but very slow.
 
 # Dealing with clouds and long run-times  
-corr-timeout 600   ## for asp_bm alogorithm, default is 900 seconds
-ip-filter-using-dem srtm_utm_tmp.tif 150   ## the srtm_utm_tmp.tif is obtained during the processing.
+# corr-timeout 600   ## for asp_bm alogorithm, default is 900 seconds
 elevation-limit 0 9000  ## remove the outlier height values
 
 # Select a cost function to use for initialization:
 # (default = 2)
 # 0 - absolute difference (fast)
 # 1 - squared difference  (faster .. but usually bad)
-# 2 - normalized cross correlation (recommended)
+# 2 - normalized cross correlation (recommended)  ## for asp_bm
+# 3 - census transform
+# 4 - ternary census transform  # for asp_sgm and asp_mgm
 # cost-mode 0
 cost-mode 4
 
 # Initialization step: correlation kernel size
 # corr-kernel 21 21   # default
-corr-kernel 7 7  # finer
+corr-kernel 9 9   # finer, at most 9 x 9 with --stereo-algorithm asp_mgm or asp_sgm
 
 # Initialization step: correlation window size
 # corr-search -80 -2 20 2
