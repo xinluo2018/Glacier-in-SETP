@@ -38,7 +38,7 @@ for (( i=0; i<${#lefts[@]}; i++))
   DIR_Tile=$DIR_DATA/tiles-dem/tile-$bottom-$left
   mkdir -p $DIR_Tile      ### create the directory
   ## -----1) get sub-region (tile-based) dem paths
-  Path_imgs=$DIR_DATA/aster-dem/*/run-DEM_wgs84_filter.tif
+  Path_imgs=$DIR_DATA/aster-dem/*/run-DEM_wgs84_filter_coreg.tif
   PATH_DEMS=$(python utils/imgs_in_extent.py -imgs $Path_imgs -e $left $right $bottom $up)
   if [ -z "$PATH_DEMS" ]; then
     echo "There is not image in the sub-region extent"

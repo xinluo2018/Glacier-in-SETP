@@ -54,7 +54,7 @@ def writeTiff(im_data, im_geotrans, im_geosrs, path_out):
         im_data = np.transpose(im_data, (2, 0, 1))
         im_bands, im_height, im_width = im_data.shape
     else:
-        im_bands,(im_height, im_width) = 1,im_data.shape
+        im_bands,(im_height, im_width) = 1, im_data.shape
     driver = gdal.GetDriverByName("GTiff")
     dataset = driver.Create(path_out, im_width, im_height, im_bands, datatype)
     if(dataset!= None):

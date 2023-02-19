@@ -38,8 +38,8 @@ for (( i=0; i<${#lefts[@]}; i++))
   extent="$left $up $right $bottom"  ## e.g., extent='72 38 84 34'
   ## cropping
   gdal_translate -projwin $extent -co COMPRESS=LZW $path_in $path_out 
-  ## reprojection
-  gdalwarp -overwrite -s_srs EPSG:4326 -t_srs "$proj_albers_china" -tr 30 30 -r bilinear -co COMPRESS=LZW -co TILED=YES $path_out $path_out_reproj 
+  # ## reprojection
+  # gdalwarp -overwrite -s_srs EPSG:4326 -t_srs "$proj_albers_china" -tr 30 30 -r bilinear -co COMPRESS=LZW -co TILED=YES $path_out $path_out_reproj 
 
   done
 

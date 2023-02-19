@@ -8,11 +8,12 @@
 ## usage: the input DIR_DATA should contains a sub-directory (namely aster_raw_l1a)
 ## note: !!!the user should login OpenTopography firstly, because the dem download is requried.
 ##       the API key should be replacede in the get_dem.py script.
+
 ## workplace
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/SETP-2012
+DIR_DATA=data/aster-stereo/SETP-2015
 
 SETTING=scripts/stereo.default
 echo 'stereo.default path:' $SETTING

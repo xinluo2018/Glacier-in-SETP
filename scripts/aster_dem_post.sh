@@ -29,7 +29,6 @@ DIRs_DEM=$DIR_DATA/aster-dem/*
 for DIR_DEM in $DIRs_DEM
 do
   echo Processing: $DIR_DEM
-
   # 1) reproject the generated dem to wgs84.
   TSRS_proj4=$(gdalsrsinfo -o proj4 $DIR_DEM/run-DEM.tif);   # UTM projection of the mosaic image 
   UTM_ZONE=$(echo ${TSRS_proj4:17:2})
@@ -62,7 +61,7 @@ do
                                           --outfile=$DIR_DEM/run-DEM_wgs84_filter_tmp.tif --calc="A*(abs(A-B)<150)" --NoDataValue=-999
 
   gdalwarp -overwrite -srcnodata "0" -dstnodata "-999" $DIR_DEM/run-DEM_wgs84_filter_tmp.tif $DIR_DEM/run-DEM_wgs84_filter.tif
-  rm srtm_subs_tmp.tif 
+  rm srtm_subs_tmp.tif dem_srtm_laysta
   rm $DIR_DEM/run-DEM_wgs84_filter_tmp.tif
 done
 
