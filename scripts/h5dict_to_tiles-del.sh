@@ -1,7 +1,7 @@
 #! /bin/bash 
 ## author: xin luo;
 ## create: 2023.1.18;
-## des: Crop one large file (dictionary-like .h5 file) to multiple-tile image. 
+## des: Crop one large file (dictionary-like .h5 file) to multiple-tile files. 
 ##      This script can be used for cropping of dictionary-like .h5 file, including cryosat eolis points data. 
 
 

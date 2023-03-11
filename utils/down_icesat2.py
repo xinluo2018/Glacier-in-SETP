@@ -1,7 +1,7 @@
 ## author: xin luo;
 ## create: 2022.8.7;
 ## des: download icesat2 data with given region and data type.
-## !!!note: the user should login on the earthdata website firstly. 
+## !!!note: the user should login on the earthdata website firstly (login website: https://urs.earthdata.nasa.gov). 
 ##          the internet is important, try different VPN。
 ## usage: python down_icesat2.py or python down_icesat2.py -e 91 27 92 28 -t 2020-01-01 2020-12-31 -o out_dir
 

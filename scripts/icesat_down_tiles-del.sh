@@ -16,7 +16,7 @@ for (( i=0; i<${#lefts[@]}; i++))
     echo "Download the icesat1 GLAH14 data..."
     dir_out=data/icesat/GLAH14-$year/tile-$bottom-$left
     python utils/down_icesat1.py -e $left $bottom $right $up -t $date_start $date_end -o $dir_out
-  else                                                       ### if the data type is GLAH14
+  else                                                       ### if the data type is ATL06
     echo "Download the icesat2 ATL06 data..."
     dir_out=data/icesat/ATL06-$year/tile-$bottom-$left
     python utils/down_icesat2.py -e $left $bottom $right $up -t $date_start $date_end -o $dir_out

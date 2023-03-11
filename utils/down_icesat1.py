@@ -2,9 +2,10 @@
 # author: xin luo
 # create: 2022.10.4
 # des: download the icesat1/glah14 data. the script was refer to the icesat1 data search website.
-## !!note: the downloaded icesat1 data contains the full-track data (not only the given-extent data).
+## !!note: 1. the user name and password will be required before the data downloading. (my username: 411795604; login website: https://urs.earthdata.nasa.gov)
+##         2. the downloaded icesat1 data contains the full-track data (not only the given-extent data).
 ##         this is different from the downloaded icesat2 data.
-## usage: python down_icesat1.py or python down_icesat1.py -e 91 27 92 28 -t 2009-01-01 2009-12-31 -o out_dir
+## usage:  python down_icesat1.py or python down_icesat1.py -e 91 27 92 28 -t 2009-01-01 2009-12-31 -o out_dir
 
 import getopt
 import sys

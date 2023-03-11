@@ -165,7 +165,6 @@ def subset(ifile, ofile=None, extent=[None,None,None,None], time_range=[None, No
     else:
         print('output -> None')
 
-
 if __name__ == '__main__':
 
     # Pass arguments 
