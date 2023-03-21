@@ -13,7 +13,7 @@
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/SETP-2016
+DIR_DATA=data/aster-stereo/SETP-2021
 
 SETTING=scripts/stereo.default
 echo 'stereo.default path:' $SETTING

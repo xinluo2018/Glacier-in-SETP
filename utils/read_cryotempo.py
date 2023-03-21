@@ -27,7 +27,6 @@ def second_to_dyr(time_second, time_start='2000-01-01 00:00:00.0'):
     time_second_dyr = Time(time_start_gps, format="decimalyear").value
     return time_second_dyr
 
-
 def get_args():
     description = "read cryotempo eolis point data files."
     parser = argparse.ArgumentParser(description=description)

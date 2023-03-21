@@ -3,8 +3,6 @@
 # des: download the crytempo eolis point data.
 # usage: 1) search the data from the cs2eo.org(https://cs2eo.org/cryotempo) website. 2) replace the esa_files (below) with the download script from the cs2eo.org website.
 
-
-
 import os
 import platform
 from ftplib import FTP
@@ -66,8 +64,6 @@ def download_files(user_email):
 if __name__ == '__main__':
     if int(platform.python_version_tuple()[0]) < 3:
         exit("Your Python version is {}. Please use version 3.0 or higher.".format(platform.python_version()))
-
-    # email = input("Please enter your e-mail: ")
-    
+    # email = input("Please enter your e-mail: ")    
     download_files(email)
     

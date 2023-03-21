@@ -13,12 +13,12 @@ cd /home/xin/Developer-luo/Glacier-in-SETP
 year=2007   # default
 
 # Get the options
-while getopts "y:" option; do
-   case $option in
+while getopts "y:" arg; do
+   case $arg in
       y) # Enter a year
          year=$OPTARG;;
-      ?) # Invalid option
-         echo "Error: Invalid option"
+      ?) # Invalid argment
+         echo "Error: Invalid argment"
          exit;;
    esac
 done
