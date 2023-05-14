@@ -35,13 +35,18 @@ gdal_calc.py -A $path_img --A_band=1 -B $path_img --B_band=2 \
 ### ------ reprojection ------
 ## 1) wgs84 to utm projection
 gdalwarp  -overwrite -s_srs EPSG:4326 -t_srs EPSG:32644 -tr 30 30 -r cubic -co COMPRESS=LZW -co TILED=YES input.tif output.tif 
-## 2) wgs84 to wgs84/egm2008
+## 2) wgs84 to albers projection
+proj_albers_china="+proj=aea +ellps=krass +lon_0=105 +lat_1=25 +lat_2=47"   ## Equal area projection for China
+gdalwarp -overwrite -s_srs EPSG:4326 -t_srs "$proj_albers_china" -tr 30 30 -r bilinear -co COMPRESS=LZW -co TILED=YES input.tif output.tif  
+## 3) wgs84 to wgs84/egm2008
 # gdalwarp  -s_srs "+proj=longlat +datum=WGS84 +no_def" -t_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids=egm08_25.gtx" input.tif output.tif
 # !gdalwarp -overwrite -s_srs EPSG:4326 -t_srs EPSG:4326+3855 input.tif output.tif
-## 3) wgs84/egm96 to wgs84/egm2008
+## 4) wgs84/egm96 to wgs84/egm2008
 # !gdalwarp  -s_srs "+proj=longlat +datum=WGS84 +geoidgrids=egm96_15.gtx" -t_srs "+proj=longlat +datum=WGS84 +no_defs +geoidgrids=egm08_25.gtx" input.tif output.tif
-## 4) wgs84/egm96 to wgs84
+## 5) wgs84/egm96 to wgs84
 # !gdalwarp  -s_srs "+proj=longlat +datum=WGS84 +geoidgrids=egm96_15.gtx" -t_srs "+proj=longlat +datum=WGS84 +no_defs" input.tif output.tif
+
+
 
 ##### python style example
 ```python

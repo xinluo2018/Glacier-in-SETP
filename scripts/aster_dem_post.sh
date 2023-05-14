@@ -2,9 +2,11 @@
 ## author: xin luo; xxxx
 ## create: 2023.02.13;
 ## des: post-processing for the generated aster dems. include: 
-##    2) reproject the generated dem to wgs84.
-##    1) aster dem outlier filtering by difference value between aster dem and srtm dem.
+##    1) reproject the generated dem to wgs84.
+##    2) aster dem outlier filtering by difference value between aster dem and srtm dem.
+
 ## usage: ./scripts/aster_dem_post.sh -y 2007
+
 
 ## workplace
 cd /home/xin/Developer-luo/Glacier-in-SETP
@@ -61,7 +63,7 @@ do
                                           --outfile=$DIR_DEM/run-DEM_wgs84_filter_tmp.tif --calc="A*(abs(A-B)<150)" --NoDataValue=-999
 
   gdalwarp -overwrite -srcnodata "0" -dstnodata "-999" $DIR_DEM/run-DEM_wgs84_filter_tmp.tif $DIR_DEM/run-DEM_wgs84_filter.tif
-  rm srtm_subs_tmp.tif dem_srtm_laysta
+  rm srtm_subs_tmp.tif dem_srtm_laysta.tif
   rm $DIR_DEM/run-DEM_wgs84_filter_tmp.tif
 done
 

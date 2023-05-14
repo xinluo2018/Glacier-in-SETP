@@ -6,7 +6,6 @@
 ##      2) the date of the masaic image is mapped.
 ## usage: ./scripts/dems2tiles.sh -y 2007
 
-
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
 ## Parameters configuration

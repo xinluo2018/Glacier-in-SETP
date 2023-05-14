@@ -3,6 +3,7 @@ __pycache__/
 data/*
 data-del/*
 **/.DS_Store
+.order_restart
 # data/TPlateau_boundary/*
 # data/rgi/*
 # data/icesat2/*

@@ -3,7 +3,6 @@
 ## des: co-register the aster dem to srtm. 
 ## usage: python ./scripts/dem_coregis.py -year 2007
 
-
 import os
 import xdem
 import pyproj
@@ -31,14 +30,14 @@ dir_forest = dir_proj+'/data/globeland30/2010/tiles'      # land cover data for 
 
 #########---------------- Some functions to be used -----------------###########
 ## Tiled data mosaic and subseting to dem extent
-def tiles2extent(dir_data, extent, path_save):
+def tiles2extent(dir_tiled_data, extent, path_save):
     '''
     args:
       dir_data: string, directory of the tiled data
       extent: list, [left, right, bottom, up], can be obtained by readTiff() function.
       path_save, str, the file path to be saved. 
     '''
-    paths_tile = glob(dir_data+'/*[!albers].tif')
+    paths_tile = glob(dir_tiled_data+'/*[!albers].tif')
     ### data mosaic
     paths_tile_sel = imgs_in_extent(paths_img=paths_tile, extent=extent)
     paths_tile_sel = " ".join(paths_tile_sel)
@@ -112,15 +111,20 @@ if __name__ == '__main__':
     paths_dem = glob(dir_proj+'/data/aster-stereo/SETP-%s/aster-dem/*/run-DEM_wgs84_filter.tif' % (year))    # slave dem
     paths_dem_aligned = [os.path.splitext(path)[0]+'_coreg.tif' for path in paths_dem]
     print('Number of dems to be processed: ', len(paths_dem))
-    for id, path_dem in enumerate(paths_dem):
+    for id, path_dem in enumerate(paths_dem): 
         print('------------- Processing the %dth dem -------------' % (id+1))
+        print(path_dem)
         path_dem, path_dem_aligned = paths_dem[id], paths_dem_aligned[id]
         extent_dem, espg_dem = get_extent(path_dem)
         ### get the auxilary data.
-        tiles2extent(dir_data = dir_srtm, extent = extent_dem, path_save = dir_proj+'/srtm_extent.tif')
-        tiles2extent(dir_data = dir_water, extent = extent_dem, path_save = dir_proj+'/wat_extent.tif')
-        tiles2extent(dir_data = dir_rgi60, extent = extent_dem, path_save = dir_proj+'/glacier_extent.tif')
-        tiles2extent(dir_data = dir_forest, extent = extent_dem, path_save = dir_proj+'/forest_extent.tif')
+        path_srtm_extent = dir_proj+'/srtm_extent.tif'
+        path_wat_extent = dir_proj+'/wat_extent.tif'
+        path_glacier_extent = dir_proj+'/glacier_extent.tif'
+        path_forest_extent = dir_proj+'/forest_extent.tif'
+        tiles2extent(dir_tiled_data = dir_srtm, extent = extent_dem, path_save = path_srtm_extent)
+        tiles2extent(dir_tiled_data = dir_water, extent = extent_dem, path_save = path_wat_extent)
+        tiles2extent(dir_tiled_data = dir_rgi60, extent = extent_dem, path_save = path_glacier_extent)
+        tiles2extent(dir_tiled_data = dir_forest, extent = extent_dem, path_save = path_forest_extent)
         ### dems co-registration by using xdem software:
         ## --1.data reading
         srtm = xdem.DEM(dir_proj+'/srtm_extent.tif')
@@ -134,8 +138,16 @@ if __name__ == '__main__':
         mask_wat_gla_forest = water_jrc.data[0]+rgi60_mask.data[0]*2 + forest_mask.data[0]*3
         mask_stable = np.ma.masked_equal(mask_wat_gla_forest ,0).mask     ### get stable region
         ## --3.dems co-registration by using method proposed by Nuth and Kaab.
-        nuth_kaab = xdem.coreg.NuthKaab(max_iterations=20, offset_threshold=0.05)  # offset_threshold is the distance threshold
-        nuth_kaab.fit(reference_dem=srtm, dem_to_be_aligned=dem, inlier_mask=mask_stable, verbose=True)
-        dem_aligned = nuth_kaab.apply(dem)
-        dem_aligned.save(path_dem_aligned)  # save the co-registered dem.
+        try:
+          nuth_kaab = xdem.coreg.NuthKaab(max_iterations=20, offset_threshold=0.05)  # offset_threshold is the distance threshold
+          nuth_kaab.fit(reference_dem=srtm, dem_to_be_aligned=dem, inlier_mask=mask_stable, verbose=True)
+          dem_aligned = nuth_kaab.apply(dem)
+          dem_aligned.save(path_dem_aligned)  # save the co-registered dem.
+        except:
+          print('!!!The aster dem coregistration is failed')
+          pass
+    os.remove(path_srtm_extent); os.remove(path_wat_extent); 
+    os.remove(path_glacier_extent); os.remove(path_forest_extent)
+
+
 

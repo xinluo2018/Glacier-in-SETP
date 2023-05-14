@@ -1,12 +1,14 @@
 ## author: xin luo 
-## creat: 2022.9.30, modify: 2023.2.10
+## creat: 2022.9.30, modify: 2023.5.10
 ## des: select images in the given extent.
 ## usage: python utils/imgs_in_extent.py -imgs $paths_img -e $left $right $bottom $up
+
 
 from glob import glob
 import argparse
 import pyproj
 from osgeo import gdal, osr
+
 
 def get_args():
     description = "find the images fall in the given extent."
@@ -32,7 +34,7 @@ def coor2coor(srs_from, srs_to, x, y):
     transformer = pyproj.Transformer.from_crs(int(srs_from), int(srs_to), always_xy=True)
     return transformer.transform(x,y)
 
-def get_extent(path_img):
+def get_img_extent(path_img):
       RS_Data=gdal.Open(path_img)
       im_col = RS_Data.RasterXSize  # 
       im_row = RS_Data.RasterYSize  # 
@@ -46,6 +48,7 @@ def get_extent(path_img):
       extent = (west, east, south, north)
       return extent, espg_code
 
+
 def imgs_in_extent(paths_img, extent):
   '''
   des: selected imgs that in the given extent.
@@ -55,7 +58,7 @@ def imgs_in_extent(paths_img, extent):
   '''
   paths_imgs_extent = []
   for path_img in paths_img:
-    extent_img, espg_code = get_extent(path_img)    
+    extent_img, espg_code = get_img_extent(path_img)    
     xs = (extent_img[0], extent_img[1])
     ys = (extent_img[2], extent_img[3])
     if espg_code != '4326':
