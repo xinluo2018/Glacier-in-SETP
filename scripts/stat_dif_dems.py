@@ -4,14 +4,12 @@
 ##     the statistical indicators include mean and standar deviation.
 ## usage: python scripts/stat_dif_dems.py
 
-
 import os
 import h5py
 import numpy as np
 from glob import glob
 from utils.geotif_io import readTiff
 from utils.crop2extent import img2extent
-
 
 dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
 paths_dif_tiles = glob('data/aster-stereo/tiles-dif-map/*_albers.tif')
@@ -61,8 +59,6 @@ def stat_glacier_bins(dem, glacier_mask, elev_dif_maps, elev_range=[2500, 7500],
                 std_dif_bins[str(elev_start_bin)+'_'+str(elev_end_bin)].append(np.nan)
 
     return glacier_area_bins, mean_dif_bins, std_dif_bins 
-
-
 
 if __name__ == '__main__':
     with h5py.File(paths_stat_dems, "w") as f:   
