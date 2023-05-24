@@ -12,8 +12,22 @@
 ## workplace
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
+## Parameters configuration
+year=2007     # default
+
+# Get the options
+while getopts "y:" option; do
+   case $option in
+      y) # Enter a year
+         year=$OPTARG;;
+      ?) # Invalid option
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
+
 ### get data directory and utm zone number.
-DIR_DATA=data/aster-stereo/SETP-2000
+DIR_DATA=data/aster-stereo/SETP-$year
 
 SETTING=scripts/stereo.default
 echo 'stereo.default path:' $SETTING

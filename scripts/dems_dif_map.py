@@ -13,8 +13,8 @@ from utils.geotif_io import readTiff, writeTiff
 from utils.lay_stack import lay_stack
 
 ### Setting
-# years = ['2006','2007','2008', '2009', '2018','2019','2020','2021']
-years = [ str(year) for year in range(2003,2022)]
+# years = ['2000','2001','2002']
+years = [ str(year) for year in range(2000,2022)]
 
 tile_ids = [(91,31),(92,31),(93,31),(94,31),(95,31),(91,30),(92,30),(93,30),(94,30),(95,30),(96,30),(97,30),
            (91,29),(92,29),(93,29),(94,29),(95,29),(96,29),(97,29),(98,29),(94,28),(95,28),(96,28),(97,28),(98,28),
@@ -32,7 +32,7 @@ if __name__ == '__main__':
     path_tile_save = dir_proj + '/data/aster-stereo/tiles-dif-map/tile_%s_%s.tif' % (tile_lat, tile_lon)
     ### Auxilary data
     path_srtm = dir_proj + '/data/dem-data/srtm-c/tiles/tile_%s_%s.tif' % (tile_lat, tile_lon)
-    path_glacier = dir_proj + '/data/rgi60/tiles/tile_%s_%s.tif' % (tile_lat, tile_lon)
+    path_glacier = dir_proj + '/data/land_cover/rgi60/tiles/tile_%s_%s.tif' % (tile_lat, tile_lon)
     ### merge into one paths list
     paths_img = [path_srtm] + [path_glacier] + path_dems
     lay_stack(path_imgs=paths_img, path_out='dems_laysta.tif', extent_mode='union', res=None)  # Multitemporal dems layer stacking.

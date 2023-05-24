@@ -1,5 +1,5 @@
 ## author: xin luo 
-# creat: 2023.5.14; # modify: 
+# creat: 2023.5.14; # modify: 2023.5.21
 # des: filter out the outlier values with ransac algorithm.
 
 
@@ -9,10 +9,12 @@ from sklearn import linear_model
 def ransac_filter(x, y, thre):
     '''
     input:
-        x,y: xarray.Variable, longitude and altimetry varibale (e.g.,ssha)
-        thre: float, filter threshold corresponding to the difference between y            and y_ransac 
-    ouput: 
-        the filtered y, and ransac fitting y
+        x,y: 1-dimension, np.array()
+        thre: float, filter threshold corresponding to the difference between y and y_ransac 
+    return: 
+        y_filter: the filtered y
+        y_ransac_fit: ransac fitting y
+        ransac_coef: ransac fitting coefficient.
     '''
     x_new = x[~np.isnan(y)]
     y_new = y[~np.isnan(y)]
@@ -23,4 +25,5 @@ def ransac_filter(x, y, thre):
     y_ransac_fit = ransac.predict(x)
     dif_y = np.array(abs(np.nan_to_num(y) - y_ransac_fit))
     y_filter = np.where(dif_y>thre, np.nan, y)
-    return y_filter, y_ransac_fit
+    ransac_coef = ransac.estimator_.coef_
+    return y_filter, y_ransac_fit, ransac_coef

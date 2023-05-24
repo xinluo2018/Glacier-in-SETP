@@ -23,23 +23,21 @@ def get_args():
 
 ### setting
 dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
-dir_srtm = dir_proj+'/data/dem-data/srtm-c/tiles'
-dir_water = dir_proj+'/data/water/water-jrc/tiles'      # jrc water map for water mask
-dir_rgi60 = dir_proj+'/data/rgi60/tiles'                  # rgi glacier data for glacier mask
-dir_forest = dir_proj+'/data/globeland30/2010/tiles'      # land cover data for forest mask
+paths_tiled_srtm = glob(dir_proj+'/data/dem-data/srtm-c/tiles/*[!albers].tif')
+paths_tiled_stable = glob(dir_proj+'/data/land-cover/stable-cover/tiles-2010/*[!albers].tif')
+
 
 #########---------------- Some functions to be used -----------------###########
 ## Tiled data mosaic and subseting to dem extent
-def tiles2extent(dir_tiled_data, extent, path_save):
+def tiles2extent(paths_tiled_data, extent, path_save):
     '''
     args:
-      dir_data: string, directory of the tiled data
+      paths_tiled_data: list, paths of tiled data
       extent: list, [left, right, bottom, up], can be obtained by readTiff() function.
       path_save, str, the file path to be saved. 
     '''
-    paths_tile = glob(dir_tiled_data+'/*[!albers].tif')
     ### data mosaic
-    paths_tile_sel = imgs_in_extent(paths_img=paths_tile, extent=extent)
+    paths_tile_sel = imgs_in_extent(paths_img=paths_tiled_data, extent=extent)
     paths_tile_sel = " ".join(paths_tile_sel)
     command = "gdal_merge.py -co COMPRESS=LZW -o tiles_mosaic.tif " + paths_tile_sel
     print(os.popen(command).read())
@@ -118,36 +116,29 @@ if __name__ == '__main__':
         extent_dem, espg_dem = get_extent(path_dem)
         ### get the auxilary data.
         path_srtm_extent = dir_proj+'/srtm_extent.tif'
-        path_wat_extent = dir_proj+'/wat_extent.tif'
-        path_glacier_extent = dir_proj+'/glacier_extent.tif'
-        path_forest_extent = dir_proj+'/forest_extent.tif'
-        tiles2extent(dir_tiled_data = dir_srtm, extent = extent_dem, path_save = path_srtm_extent)
-        tiles2extent(dir_tiled_data = dir_water, extent = extent_dem, path_save = path_wat_extent)
-        tiles2extent(dir_tiled_data = dir_rgi60, extent = extent_dem, path_save = path_glacier_extent)
-        tiles2extent(dir_tiled_data = dir_forest, extent = extent_dem, path_save = path_forest_extent)
+        path_stable_extent = dir_proj+'/stable_extent.tif'
+        tiles2extent(paths_tiled_data = paths_tiled_srtm, extent = extent_dem, path_save = path_srtm_extent)
+        tiles2extent(paths_tiled_data = paths_tiled_stable, extent = extent_dem, path_save = path_stable_extent)
         ### dems co-registration by using xdem software:
         ## --1.data reading
         srtm = xdem.DEM(dir_proj+'/srtm_extent.tif')
         dem = xdem.DEM(path_dem).reproject(srtm)   # slave dem
         srtm = srtm.reproject(dem)    # ensure the geo-info are completely the same. some bug for the xdem
-        ## --2. water/glacier/forest mask (water:1, glacier:2, forest:3, other:0)
-        water_jrc = xdem.DEM(dir_proj+'/wat_extent.tif').reproject(srtm)
-        rgi60_mask = xdem.DEM(dir_proj+'/glacier_extent.tif').reproject(srtm)
-        forest_mask = xdem.DEM(dir_proj+'/forest_extent.tif').reproject(srtm)
-        forest_mask.data[0] = np.where(forest_mask.data[0]==20, 1, 0) ### extract forest
-        mask_wat_gla_forest = water_jrc.data[0]+rgi60_mask.data[0]*2 + forest_mask.data[0]*3
-        mask_stable = np.ma.masked_equal(mask_wat_gla_forest ,0).mask     ### get stable region
+
+        ### --2. stable mask 
+        stable_mask = xdem.DEM(path_stable_extent).reproject(srtm)
+        stable_mask = stable_mask.data[0].astype(bool)
+
         ## --3.dems co-registration by using method proposed by Nuth and Kaab.
         try:
           nuth_kaab = xdem.coreg.NuthKaab(max_iterations=20, offset_threshold=0.05)  # offset_threshold is the distance threshold
-          nuth_kaab.fit(reference_dem=srtm, dem_to_be_aligned=dem, inlier_mask=mask_stable, verbose=True)
+          nuth_kaab.fit(reference_dem=srtm, dem_to_be_aligned=dem, inlier_mask=stable_mask, verbose=True)
           dem_aligned = nuth_kaab.apply(dem)
           dem_aligned.save(path_dem_aligned)  # save the co-registered dem.
         except:
           print('!!!The aster dem coregistration is failed')
           pass
-    os.remove(path_srtm_extent); os.remove(path_wat_extent); 
-    os.remove(path_glacier_extent); os.remove(path_forest_extent)
+    os.remove(path_srtm_extent); os.remove(path_stable_extent); 
 
 
 

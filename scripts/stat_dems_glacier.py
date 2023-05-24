@@ -1,10 +1,15 @@
 ## author: xin luo 
 # creat: 2023.5.12; # modify: 
 # des: statistic of the elevation difference maps tile by tile. 
-##     the statistical indicators include mean and standar deviation.
+##     the statistical indicators include mean and standard deviation.
 ## usage: python scripts/stat_dif_dems.py
 
-import os
+
+
+dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
+
+import os, sys
+sys.path.append(dir_proj)
 import h5py
 import numpy as np
 from glob import glob
@@ -13,27 +18,12 @@ from utils.crop2extent import img2extent
 
 dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
 paths_dif_tiles = glob('data/aster-stereo/tiles-dif-map/*_albers.tif')
-paths_stat_dems = dir_proj+'/data/aster-stereo/stat_elev_dif.h5'
+paths_stat_dems = dir_proj+'/data/aster-stereo/stat_elev_dif_glacier.h5'
 
 
-def stat_tile(glacier_mask, elev_dif_maps):
-  mean_dif_tile, std_dif_tile = [], []
-  for i in range(elev_dif_maps.shape[-1]):
-    ids_pixels_tile = np.where((glacier_mask == 1) & (elev_dif_maps[:,:,i] >-150)& (elev_dif_maps[:,:,i] < 150))
-    if ids_pixels_tile[0].shape[0] < 100:  ## the number of valid pixel should lager than 100.
-      mean_dif_tile.append(np.nan)
-      std_dif_tile.append(np.nan)
-      continue
-    else:
-      mean_dif_tile_year = np.mean(elev_dif_maps[:,:,i][ids_pixels_tile])
-      std_dif_tile_year = np.std(elev_dif_maps[:,:,i][ids_pixels_tile])
-      mean_dif_tile.append(mean_dif_tile_year)
-      std_dif_tile.append(std_dif_tile_year)
-  return mean_dif_tile, std_dif_tile
-
-def stat_glacier_bins(dem, glacier_mask, elev_dif_maps, elev_range=[2500, 7500], bin_range=100):
+def stat_glacier_bins(dem_base, glacier_mask, elev_dif_maps, elev_range=[2500, 7500], bin_range=100):
     glacier_area_bins, mean_dif_bins, std_dif_bins = {}, {}, {}
-    dem_glacier = dem*glacier_mask
+    dem_glacier = dem_base*glacier_mask
     elev_start, elev_end = elev_range
     num_bin = int((elev_end - elev_start)/bin_range)
     for i in range(num_bin):
@@ -75,14 +65,10 @@ if __name__ == '__main__':
             elev_dif_maps = img2extent(path_img=path_dif_tile, \
                                 extent=srtm_albers_info['geoextent'], size_target=srtm_albers.shape) # read and resize    
 
-            ### 1) statistic for overall tile.
-            mean_dif_tile, std_dif_tile = stat_tile(glacier_mask=glacier_mask, elev_dif_maps=elev_dif_maps)
-            ### 2) statistic for each bin of tile.
-            glacier_area_bins, mean_dif_bins, std_dif_bins = stat_glacier_bins(dem=srtm_albers, \
-                            glacier_mask=glacier_mask, elev_dif_maps=elev_dif_maps, elev_range=[2500, 7500], bin_range=100)
-            ### 3) write out to the .h5 file.
-            f.create_dataset(tile_id+"/mean_dif_tile", data=mean_dif_tile)
-            f.create_dataset(tile_id+"/std_dif_tile", data=std_dif_tile)
+            ### 1) statistic for each bin of tile.
+            glacier_area_bins, mean_dif_bins, std_dif_bins = stat_glacier_bins(dem_base=srtm_albers, \
+                      glacier_mask=glacier_mask, elev_dif_maps=elev_dif_maps, elev_range=[2500, 7500], bin_range=100)
+            ### 2) write out to the .h5 file.
             for id_bin in list(glacier_area_bins.keys()):
                 f.create_dataset(tile_id+"/glacier_area_bins/"+id_bin, data=np.array([glacier_area_bins[id_bin]]))
                 f.create_dataset(tile_id+"/mean_dif_bins/"+id_bin, data=mean_dif_bins[id_bin])
