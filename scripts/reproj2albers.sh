@@ -1,6 +1,6 @@
 #! /bin/bash
-## author: xin luo; xxxx
-## create: 2022.03.12;
+## author: xin luo; 
+## create: 2022.03.12; 
 ## des: tile-by-tile processing for reprojection from wgs84 to albers.
 
 
@@ -14,8 +14,9 @@ proj_albers_china="+proj=aea +ellps=krass +lon_0=105 +lat_1=25 +lat_2=47"   ## E
 for (( i=0; i<${#lefts[@]}; i++)) 
   do
   left=${lefts[i]}; bottom=${bottoms[i]}
-  path_in=data/land_cover/stable_cover/tiles-2020/tile_${bottom}_${left}.tif
-  path_out_reproj=data/land_cover/stable_cover/tiles-2020/tile_${bottom}_${left}_albers.tif
-  gdalwarp -overwrite -s_srs EPSG:4326 -t_srs "$proj_albers_china" -tr 30 30 -r bilinear -co COMPRESS=LZW -co TILED=YES $path_in $path_out_reproj 
+  path_in=data/aster-stereo/tiles-dif-map/tile_${bottom}_${left}.tif
+  path_out_reproj=data/aster-stereo/tiles-dif-map/tile_${bottom}_${left}_albers.tif
+  gdalwarp -overwrite -dstnodata nan -s_srs EPSG:4326 -t_srs "$proj_albers_china" -tr 30 30 -r bilinear -co COMPRESS=LZW -co TILED=YES $path_in $path_out_reproj 
   done
+
 
