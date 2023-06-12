@@ -4,7 +4,6 @@
 ##      output variables: mean value and standard deviation of the difference values for the 
 ##                        glacier and stable regions, respectively. 
 ##      the mean and standard deviation is calculated by bins and by years, and this script is only used for icesat-1 data processing.    
-## Usage: python stat_dif_altimeter.py -d data/icesat-1
 
 
 import os
@@ -116,13 +115,13 @@ if __name__ == '__main__':
     ### Conver to xarray data.
     stat_dif_xr =xr.Dataset(
             {"area_glacier_bins": (["bins_id"], glacier_area_bins),          
-            "mean_glacier_bins": (["bins_id", "time"], mean_glacier_years_bins),         
-            "std_glacier_bins": (["bins_id", "time"], std_glacier_years_bins),         
-            "mean_stable_bins": (["time"], mean_stable_years),         
-            "std_stable_bins": (["time"], std_stable_years),         
+            "mean_glacier_bins": (["bins_id", "years"], mean_glacier_years_bins),         
+            "std_glacier_bins": (["bins_id", "years"], std_glacier_years_bins),         
+            "mean_stable_bins": (["years"], mean_stable_years),         
+            "std_stable_bins": (["years"], std_stable_years),         
             },
             coords={'bins_id': bins_id,
-                    'time': years})
+                    'years': years})
     stat_dif_xr.to_netcdf(path_stat_dif)
 
 

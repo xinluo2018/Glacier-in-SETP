@@ -6,8 +6,9 @@
 
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
-bottom=27; up=32; left=91; right=99;
-year=2005
+# bottom=27; up=32; left=91; right=99;
+bottom=27; up=28; left=96; right=97;
+year=2018
 date_start=$year-01-01; date_end=$year-12-31
 if [[ "2003 2004 2005 2006 2007 2008 2009" == *"$year"* ]]; then          ### if the data type is GLAH14
   echo "Download the icesat1 GLAH14 data..."

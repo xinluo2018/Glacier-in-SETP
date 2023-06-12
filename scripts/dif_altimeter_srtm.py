@@ -13,14 +13,14 @@ import argparse
 from osgeo import gdal, osr
 from glob import glob
 
-
-
 os.chdir('/home/xin/Developer-luo/Glacier-in-SETP')
 
 ### Data  setting.
-dir_altimeter = 'data/icesat-1'
-data_type = 'GLAH14'
-years = ['2003', '2004', '2005', '2006', '2007', '2008', '2009']
+dir_altimeter = 'data/icesat-2'
+# data_type = 'GLAH14'   ### 
+# years = ['2003', '2004', '2005', '2006', '2007', '2008', '2009']
+data_type = 'ATL06'   ### 
+years = ['2018', '2019', '2020', '2021', '2022']
 
 #### Data to be read in
 dir_srtm_tiles = 'data/dem-data/srtm-c/tiles'

@@ -24,7 +24,7 @@ dir_stable_tile = 'data/land-cover/stable-cover/tiles-2010'
 path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles' 
 
 ### Path to be write out.
-paths_stat_dif_dems = dir_proj+'/data/aster-stereo/stat_dif_dems.nc'
+paths_stat_dif_dems = dir_proj+'/data/aster-stereo/stat_dif_tiles_bins.nc'
 
 ### Parameters setting
 elev_bin_start, elev_bin_end, elev_bin = 2500, 7500, 100
@@ -189,13 +189,13 @@ if __name__ == '__main__':
     stat_dif_dems_xr =xr.Dataset(
             {"area_glacier_tiles": (["tiles_id"], area_glacier_tiles),     
              "area_glacier_tiles_bins": (["tiles_id", "bins_id"], area_glacier_tiles_bins),      
-            "mean_stable_tiles": (["tiles_id", "time"], mean_stable_tiles),         
-            "std_stable_tiles": (["tiles_id", "time"], std_stable_tiles),
-            "mean_glacier_tiles_bins": (["tiles_id", "bins_id", "time"], mean_glacier_tiles_bins),         
-            "std_glacier_tiles_bins": (["tiles_id", "bins_id", "time"], std_glacier_tiles_bins),          
+            "mean_stable_tiles": (["tiles_id", "years"], mean_stable_tiles),         
+            "std_stable_tiles": (["tiles_id", "years"], std_stable_tiles),
+            "mean_glacier_tiles_bins": (["tiles_id", "bins_id", "years"], mean_glacier_tiles_bins),         
+            "std_glacier_tiles_bins": (["tiles_id", "bins_id", "years"], std_glacier_tiles_bins),          
             },
             coords={'tiles_id': tiles_id,
                     'bins_id': bins_id,
-                    'time': years})
+                    'years': years})
     stat_dif_dems_xr.to_netcdf(paths_stat_dif_dems)
 

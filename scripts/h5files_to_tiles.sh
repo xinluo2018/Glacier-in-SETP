@@ -9,9 +9,9 @@
 
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
-dir_h5files=data/icesat-1/GLAH14-2006   ### default data directory
-# dir_h5files=data/icesat-2/ATL06-2018   ## optional directory
-# dir_h5files=data/cryosat-2/tempopoints-2021    ## optional directory
+# dir_h5files=data/icesat-1/GLAH14-2006   ### default data directory
+# dir_h5files=data/icesat-2/ATL06-2022   ## optional directory
+dir_h5files=data/cryosat-2/eolis-point-2021    ## optional directory
 
 # Get the options
 while getopts "d:" arg; do
@@ -27,8 +27,7 @@ done
 lefts=(91 92 93 94 95 91 92 93 94 95 96 97 91 92 93 94 95 96 97 98 94 95 96 97 98 96 97 98)
 bottoms=(31 31 31 31 31 30 30 30 30 30 30 30 29 29 29 29 29 29 29 29 28 28 28 28 28 27 27 27)
 # year=(2006 2007 2008 2009 2018 2019 2020 2021 2022)
-# lefts=(91); bottoms=(31); 
-
+# lefts=(96); bottoms=(27); 
 
 for (( i=0; i<${#lefts[@]}; i++))
   do

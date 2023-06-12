@@ -7,21 +7,20 @@
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
 bottom=27; up=32; left=91; right=99;
-year=2021
+year=2017
 
-### -- 1. readout icesat GLAH14/ATL06 data (selected variables).
 ### setting
-dir_data_raw=data/cryosat-2/tempopoints-$year
+dir_data_raw=data/cryosat-2/eolis-point-$year
 func_read=utils/read_cryotempo.py
-paths_file_raw=$(ls $dir_data_raw/data-raw/*)
+paths_file_raw=$(ls $dir_data_raw/raw/??/*/*.nc)
 
 
 echo $paths_file_raw
-dir_readout=data/cryotempo-points/$year/data-readout
+dir_readout=data/cryosat-2/eolis-point-$year/readout
 if [ ! -d $dir_readout ]; then mkdir $dir_readout 
 fi
 
-### 1.readout the icesat data
+### 1.read and write out the cryo2 data
 python $func_read $paths_file_raw -o $dir_readout -n 4 
 
 ### -- 2. subset to the specific region
