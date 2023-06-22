@@ -22,6 +22,8 @@ paths_dif_tiles = glob('data/aster-stereo/tiles-dif-map/*_albers.tif')
 dir_glacier_tile = 'data/land-cover/rgi60/tiles'
 dir_stable_tile = 'data/land-cover/stable-cover/tiles-2010'            
 path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles' 
+# res_tile = 0.5   ### 0.5 degree for each statistic unit.
+
 
 ### Path to be write out.
 paths_stat_dif_dems = dir_proj+'/data/aster-stereo/stat_dif_tiles_bins.nc'
@@ -49,7 +51,7 @@ def stat_stable_years(stable_mask, elev_dif_maps, coef_sigma=3):
         stable_mask: stable mask image.
         elev_dif_maps: dems differences maps.
         coef_sigma: multiplier coefficient of the sigma for the outlier values filtering.
-    return:     
+    return:
         mean_dif_maps: list, mean value of the diference maps. 
         std_dif_maps: list, standard value of the difference maps.       
     """
