@@ -1,10 +1,10 @@
 # author: xin luo, 
 # create: xin luo, 2023.1.17.
-# des: read in and write out cryotempo data (such as eolis point).
+# des: read in and write out cryotempo eolis point data.
 ## 1) the original .nc data will be convert to .h5 data.
 ## 2) the second time format will be convert to decimal time.
-# usage: python read_cryotempo_points.py ./input/path/*.nc -o /output/path/dir -n 4
-# undo: functions for reading the other type of cryotempo data.
+# usage: python read_eolis_points.py ./input/path/*.nc -o /output/path/dir -n 4
+# undo: functions for reading the other type of cryotempo eolis point data.
 
 from astropy.time import Time
 import argparse
@@ -43,18 +43,23 @@ def get_args():
             default=[1])
     return parser.parse_args()
 
-def read_cryotempo_points(file_in, dir_out):
+def read_eolis_point(file_in, dir_out):
 
-  data = {}   # convert .nc data to dictionary format.
+  data_dict = {}   # convert .nc data to dictionary format.
   with nc.Dataset(file_in) as netcdf:
-      for column in netcdf.variables:
-          rows_from_nc = netcdf.variables[column]
-          data[column] = pd.Series(rows_from_nc[:])
-  df = pd.DataFrame(data)
+      for var_name in netcdf.variables:
+        var_value = netcdf.variables[var_name][:]        
+        if var_name == 'time': 
+            var_name = 't_dyr'   ## update the variable name.
+            var_value = second_to_dyr(var_value, time_start='1970-01-01')
+        elif var_name == 'elevation': var_name = 'h'
+        data_dict[var_name] = var_value
+        # data[var_name] = pd.Series(var_value)
+#   df = pd.DataFrame(data)
 
-  time_dyr = second_to_dyr(df['time'].values, time_start='1970-01-01')
-  df.time = time_dyr  ### convert second format time to decimal time.
-  data_dict = df.to_dict(orient='list')
+#   time_dyr = second_to_dyr(df['time'].values, time_start='1970-01-01')
+#   df.time = time_dyr  ### convert second format time to decimal time.
+#   data_dict = df.to_dict(orient='list')
 
   #------------------------------------------#
   # Writting out the selected data        #
@@ -77,11 +82,11 @@ if __name__ == '__main__':
 
     if njobs == 1:
         print("running in serial ...")
-        [read_cryotempo_points(f, dir_out) for f in ifiles]
+        [read_eolis_point(f, dir_out) for f in ifiles]
     else:
         print(("running in parallel (%d jobs) ..." % njobs))
         Parallel(n_jobs=njobs, verbose=5)(
-            delayed(read_cryotempo_points)(f, dir_out) for f in ifiles)
+            delayed(read_eolis_point)(f, dir_out) for f in ifiles)
 
 
 

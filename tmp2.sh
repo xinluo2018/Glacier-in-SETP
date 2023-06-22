@@ -1,12 +1,24 @@
 
-# years=(2007 2008 2009 2010 2011 2012 2013 2014 2015 2016 2017 2018 2019 2020 2021)
 
-# for year in ${years[@]}
-#   do
-#   python ./scripts/dem_coregis.py -year $year
-#   echo $year
+lefts=(91 92 93 94 95 91 92 93 94 95 96 97 91 92 93 94 95 96 97 98 94 95 96 97 98 96 97 98)
+bottoms=(31 31 31 31 31 30 30 30 30 30 30 30 29 29 29 29 29 29 29 29 28 28 28 28 28 27 27 27)
 
-#   done
 
-python ./scripts/dems_dif_map.py
-./scripts/reproj2albers.sh
+# input_dem=data/dem-data/srtm-c/tiles/tile_27_96.tif
+# output_dem_slope=data/dem-data/srtm-c/tiles-slope/tile_27_96.tif
+# gdaldem slope $input_dem $output_dem_slope -s 111120 -compute_edges
+
+# ## reprojection
+for (( i=0; i<${#lefts[@]}; i++)) 
+  do
+  left=${lefts[i]}; bottom=${bottoms[i]}
+  input_dem=data/dem-data/srtm-c/tiles/tile_${bottom}_${left}.tif
+  output_dem_slope=data/dem-data/srtm-c/tiles-slope/tile_${bottom}_${left}.tif
+  gdaldem slope $input_dem $output_dem_slope -s 111120 -compute_edges
+  done
+
+
+
+
+
+

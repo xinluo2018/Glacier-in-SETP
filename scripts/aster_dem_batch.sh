@@ -6,14 +6,14 @@
 ##      1) reprojection (to wgs84) for the L1A aster vnir bands (15 m)
 ##      2) dem generation using aster stereo images.
 ## usage: the input DIR_DATA should contains a sub-directory (namely aster_raw_l1a)
-## note: !!!the user should login OpenTopography firstly, because the dem download is requried.
+## note: !!!the user should login OpenTopography firstly, because the dem downloading is requried.
 ##       the API key should be replacede in the get_dem.py script.
 
 ## workplace
 cd /home/xin/Developer-luo/Glacier-in-SETP
 
 ## Parameters configuration
-year=2007     # default
+year=2022     # default
 
 # Get the options
 while getopts "y:" option; do

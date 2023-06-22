@@ -11,7 +11,7 @@ cd /home/xin/Developer-luo/Glacier-in-SETP
 
 # dir_h5files=data/icesat-1/GLAH14-2006   ### default data directory
 # dir_h5files=data/icesat-2/ATL06-2022   ## optional directory
-dir_h5files=data/cryosat-2/eolis-point-2021    ## optional directory
+dir_h5files=data/cryosat-2/eolis-point-2019    ## optional directory
 
 # Get the options
 while getopts "d:" arg; do

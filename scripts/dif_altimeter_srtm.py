@@ -3,7 +3,7 @@
 # des: obtain the values as follows: lon_isat, lat_isat, h_isat, h_srtm, h_dif, land_type
 #      the result is write out as tiles-based multiple-year .h5 file.
 ##     this scripts can be used for processing of icesat-1, icesat-2 and cryosat-2 data.
-# usage: python scripts/altimeter_srtm_dif.py 
+## usage: python scripts/dif_altimeter_srtm.py -dtype icesat-1
 
 
 import os
@@ -15,25 +15,25 @@ from glob import glob
 
 os.chdir('/home/xin/Developer-luo/Glacier-in-SETP')
 
-### Data  setting.
-dir_altimeter = 'data/icesat-2'
-# data_type = 'GLAH14'   ### 
-# years = ['2003', '2004', '2005', '2006', '2007', '2008', '2009']
-data_type = 'ATL06'   ### 
-years = ['2018', '2019', '2020', '2021', '2022']
+def get_args():
+    """ Get command-line arguments. """
+    parser = argparse.ArgumentParser(
+          description='get the date dyte of the processed data')
+    parser.add_argument(
+          '-dtype', metavar='dtype', type=str, nargs='+',
+          help='the data type (icesat-1 or icesat-2 or cryosat-2) of the processing data',
+          default=['cryosat-2'])
+    return parser.parse_args()
 
 #### Data to be read in
 dir_srtm_tiles = 'data/dem-data/srtm-c/tiles'
-dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles' ## get land type of water
+dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles'       ## get land type of water
 dir_stable_tiles = 'data/land-cover/stable-cover/tiles-2010'  ## get stable land
 dir_glacier_tiles = 'data/land-cover/rgi60/tiles'
 paths_srtm_tile = glob(dir_srtm_tiles+'/tile_??_??.tif')
 paths_srtm_tile.sort()
 tiles_id = [path_srtm_tile[-14:-4] for path_srtm_tile in paths_srtm_tile]
 
-#### Data to be writen out
-# path_dif_altimeter = dir_altimeter + '/dif_altimeter_srtm.h5'
-dir_dif_altimeter = dir_altimeter + '/tiles-dif-srtm'
 
 ##### ----------------------------copy the utility code----------------------------------- #####
 ### tiff image reading
@@ -84,7 +84,6 @@ def geo2imagexy(x, y, gdal_trans, integer=True):
     return row_img, col_img
 
 def crop_to_extent(path_img, extent, size_target=None, path_save=None):
-
     '''
     crop image to given extent/size.
     arg:
@@ -154,6 +153,32 @@ def crop_to_extent(path_img, extent, size_target=None, path_save=None):
 ##### ---------------------------------------------------------------------------- #####
 
 if __name__ == '__main__':
+
+    ### Data setting.
+    args = get_args()
+    dtype = args.dtype[0]
+    print('------------- The processing data is %s -------------' % (dtype))
+    ### paths to be read in and write out.
+    if dtype == 'icesat-1':
+        dif_outlier_thre = 100
+        dir_altimeter = 'data/icesat-1'
+        data_type = 'GLAH14' 
+        years = [str(year) for year in range(2003, 2010)]
+    if dtype == 'icesat-2':
+        dif_outlier_thre = 100
+        dir_altimeter = 'data/icesat-2'
+        data_type = 'ATL06'
+        years = [str(year) for year in range(2018, 2023)]
+    elif dtype == 'cryosat-2':
+        dif_outlier_thre = 100
+        dir_altimeter = 'data/cryosat-2'
+        data_type = 'eolis-point'
+        years = [str(year) for year in range(2010, 2023)]
+
+    #### Data to be writen out
+    dir_dif_altimeter = dir_altimeter + '/tiles-dif-srtm'
+
+    if not os.path.exists(dir_dif_altimeter): os.makedirs(dir_dif_altimeter)
     for tile_id in tiles_id:
         print('Tile id:', tile_id)
         path_dif_altimeter = dir_dif_altimeter + '/'+tile_id+'.h5'
@@ -186,12 +211,16 @@ if __name__ == '__main__':
                         altimeter_tile_years['lat'] = f_altimeter['lat'][:]
                         altimeter_tile_years['h'] = f_altimeter['h'][:]
                         altimeter_tile_years['t_dyr'] = f_altimeter['t_dyr'][:]
+                        if data_type == 'eolis-point': altimeter_tile_years['is_swath'] = f_altimeter['is_swath'][:]
                     else:
                         altimeter_tile_years['lon'] = np.concatenate([altimeter_tile_years['lon'], f_altimeter['lon'][:]], axis=0) 
                         altimeter_tile_years['lat'] = np.concatenate([altimeter_tile_years['lat'], f_altimeter['lat'][:]], axis=0) 
                         altimeter_tile_years['h'] = np.concatenate([altimeter_tile_years['h'], f_altimeter['h'][:]], axis=0) 
                         altimeter_tile_years['t_dyr'] = np.concatenate([altimeter_tile_years['t_dyr'], f_altimeter['t_dyr'][:]], axis=0)
+                        if data_type == 'eolis-point': 
+                            altimeter_tile_years['is_swath'] = np.concatenate([altimeter_tile_years['is_swath'], f_altimeter['is_swath'][:]], axis=0) 
 
+        if len(altimeter_tile_years) == 0: continue
         ### 2. Remove altimeter data which is out of the dem image extent.
         lon_min_srtm_tile, lon_max_srtm_tile, lat_min_srtm_tile, lat_max_srtm_tile = srtm_tile_info['geoextent']
         ids = np.where((altimeter_tile_years['lon']>lon_min_srtm_tile) & (altimeter_tile_years['lon']<lon_max_srtm_tile) & \
@@ -225,9 +254,9 @@ if __name__ == '__main__':
                             y=altimeter_tile_years['lat'], gdal_trans=srtm_tile_info['geotrans'], integer=True)  ## update the row_altimeter_srtm and col_altimeter_srtm.
         h_srtm = srtm_tile[row_altimeter_srtm, col_altimeter_srtm]
         h_dif = altimeter_tile_years['h'] - h_srtm
-        altimeter_tile_years['h_dif'] = h_dif; 
+        altimeter_tile_years['h_dif'] = h_dif
         altimeter_tile_years['h_srtm'] = h_srtm 
-        ids_valid = np.where(abs(altimeter_tile_years['h_dif'])<100)[0]    ### outlier filtering.
+        ids_valid = np.where(abs(altimeter_tile_years['h_dif'])<dif_outlier_thre)[0]    ### outlier filtering.
         for keys in altimeter_tile_years:
             altimeter_tile_years[keys] = altimeter_tile_years[keys][ids_valid]
         ### 5. Write out the processed data

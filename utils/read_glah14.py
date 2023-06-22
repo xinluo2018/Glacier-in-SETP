@@ -3,8 +3,10 @@ author: Fernando Paolo,
 modify: xin luo, 2022.8.2.  
 des: 
   read and write out icesat1-gla14 data.
-  main processing: 1) height corrections, 2) selected valid points, 
-                   3) selected variables. 3) add oribt type
+  main processing: 1) height corrections from egm96 to wgs84, 
+                   2) selected valid points, 
+                   3) selected variables. 
+                   4) add selected oribt type
 example:
   python read_glah14.py ./input/path/*.h5 -o /output/path/dir -n 4 
 """

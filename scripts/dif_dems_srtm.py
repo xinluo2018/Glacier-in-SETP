@@ -1,7 +1,7 @@
 ## author: xin luo 
 # creat: 2023.2.19; # modify: 
 # des: generate dem difference maps by using aster dems.
-## usage: python scripts/dems_dif_map.py
+## usage: python scripts/dif_dems_srtm.py
 
 
 dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
@@ -14,7 +14,7 @@ from utils.lay_stack import lay_stack
 
 ### Setting
 # years = ['2000','2001','2002']
-years = [ str(year) for year in range(2000,2022)]
+years = [ str(year) for year in range(2000,2023)]
 
 tile_ids = [(91,31),(92,31),(93,31),(94,31),(95,31),(91,30),(92,30),(93,30),(94,30),(95,30),(96,30),(97,30),
            (91,29),(92,29),(93,29),(94,29),(95,29),(96,29),(97,29),(98,29),(94,28),(95,28),(96,28),(97,28),(98,28),
