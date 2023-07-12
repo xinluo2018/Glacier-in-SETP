@@ -37,10 +37,6 @@ def get_args():
             help=('only merge specific vars if given, otherwise merge all'),
             default=[],)
     parser.add_argument(
-            '-z', metavar=None, dest='comp', type=str, nargs=1,
-            help=('compress merged file(s)'),
-            choices=('lzf', 'gzip'), default=[None],)
-    parser.add_argument(
             '-k', metavar='key', dest='key', type=str, nargs=1,
             help=('sort files by numbers after `key` in file name'),
             default=[None],)
@@ -111,7 +107,7 @@ def sort_files(ifiles, key=None):
         ifiles.sort(key=natkey)
 
 
-def merge(ifiles, ofile, vnames, comp):
+def merge(ifiles, ofile, vnames=None):
     ''' des: merge the similar files into one file
     arg:
         ifiles: list with strs, files need to be merged.
@@ -122,15 +118,16 @@ def merge(ifiles, ofile, vnames, comp):
     # Get length of output containers (from all input files)
     print('Calculating lenght of output from all input files ...')
     N = get_total_len(ifiles)   # 
+    # get var names from first file, if not provided
+    vnames = get_var_names(ifiles[0]) if not vnames else vnames
 
     with h5py.File(ofile, 'w') as out_f, h5py.File(ifiles[0], 'r') as in_f_0:
         for key in vnames:
             shape_var = in_f_0[key][:].shape
             if len(shape_var) == 1:                        
-                out_f.create_dataset(key, (N,), dtype=None, compression=comp)
+                out_f.create_dataset(key, (N,), dtype=None)
             else:
-                # out_f.create_dataset(key, (N, shape_var[1]), dtype='float32', compression=comp)
-                out_f.create_dataset(key, (N, shape_var[1]), dtype=None, compression=comp)
+                out_f.create_dataset(key, (N, shape_var[1]), dtype=None)
 
         # Iterate over the input files
             k1 = 0
@@ -155,7 +152,6 @@ if __name__ == '__main__':
     ofile = args.ofile[0]      # str
     nfiles = args.nfiles[0]
     vnames = args.vnames
-    comp = args.comp[0]
     key = args.key[0]
     njobs = args.njobs[0]
 
@@ -167,8 +163,6 @@ if __name__ == '__main__':
     # sort files before merging
     sort_files(ifile, key=key)
 
-    # get var names from first file, if not provided
-    vnames = get_var_names(ifile[0]) if not vnames else vnames
 
     # groups of input files -> multiple output files
     if nfiles > 1:
@@ -180,10 +174,10 @@ if __name__ == '__main__':
         print(('Running parallel code (%d jobs) ...' % njobs))
         from joblib import Parallel, delayed
         Parallel(n_jobs=njobs, verbose=5)(
-                delayed(merge)(fi, fo, vnames, comp) \
+                delayed(merge)(fi, fo, vnames) \
                         for fi, fo in zip(ifile, ofile))
     else:
         print('Running sequential code ...')
-        [merge(fi, fo, vnames, comp) for fi, fo in zip(ifile, ofile)]
+        [merge(fi, fo, vnames) for fi, fo in zip(ifile, ofile)]
 
 

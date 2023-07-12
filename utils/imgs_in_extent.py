@@ -55,6 +55,8 @@ def imgs_in_extent(paths_img, extent):
   arg:
     paths_img: list, images paths;
     extent: the given extent(wgs84). list -> [left, right, bottom, up]
+  return:
+    paths_imgs_extent: list, image paths that fall in the given extent.
   '''
   paths_imgs_extent = []
   for path_img in paths_img:
@@ -77,11 +79,11 @@ def imgs_in_extent(paths_img, extent):
 
 if __name__ == '__main__':
   
-  args = get_args()
-  paths_img = args.imgs[:]
-  extent = args.extent[:]
-  paths_imgs_extent = imgs_in_extent(paths_img, extent)
-  for path in paths_imgs_extent:
-    print(path)
+    args = get_args()
+    paths_img = args.imgs[:]
+    extent = args.extent[:]
+    paths_imgs_extent = imgs_in_extent(paths_img, extent)
+    for path in paths_imgs_extent:
+      print(path)
 
 

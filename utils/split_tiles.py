@@ -29,7 +29,7 @@ def get_args():
     parser.add_argument(
             '-b', metavar=('w','e','s','n'), dest='bbox', type=float, nargs=4,
             help=('bounding box for geographic region (m/degree)'),
-            default=[None,None,None,None],)
+            default=[None, None, None, None],)
     parser.add_argument(
             '-d', metavar=('dxy'), dest='dxy', type=float, nargs=2,
             help=('tile size (m/degree)'),

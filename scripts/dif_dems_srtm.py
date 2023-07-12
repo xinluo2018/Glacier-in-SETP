@@ -19,6 +19,7 @@ years = [ str(year) for year in range(2000,2023)]
 
 
 dir_srtm_tiles = 'data/dem-data/srtm-c/tiles'
+dir_out = 'data/aster-stereo/tiles-dif-map'
 paths_srtm_tile = glob(dir_srtm_tiles+'/tile_??_??.tif')
 paths_srtm_tile.sort()
 tiles_id = [path_srtm_tile[-14:-4] for path_srtm_tile in paths_srtm_tile]
@@ -29,10 +30,10 @@ if __name__ == '__main__':
   # for tile_id in tile_ids[2:3]:    ### check 1 tile.
     ### 1. layer stacking of the dems and auxilary data.
     print('-------------------- Processing tile: %s ---------------------' % (tile_id))
-    path_dems = [dir_proj + '/data/aster-stereo/SETP-%s/tiles-dem/'+ tile_id.replace('_', '-') + '/dems_mosaic_subs.tif' for tile_id in tiles_id]
+    path_dems = [dir_proj + '/data/aster-stereo/SETP-' + year + '/tiles-dem/'+ tile_id.replace('_', '-') + '/dems_mosaic_subs.tif' for year in years]
     path_nodata = dir_proj + '/data/aster-stereo/tiles-nodata/' + tile_id + '.tif' 
     path_dems = [ path_dem if os.path.exists(path_dem) else path_nodata for path_dem in path_dems ]
-    path_tile_save = dir_proj + '/data/aster-stereo/tiles-dif-map/' + tile_id + '.tif'
+    path_tile_save = dir_out + '/' + tile_id + '.tif'
     ### Auxilary data
     path_srtm = dir_proj + '/data/dem-data/srtm-c/tiles/' + tile_id + '.tif'
     ### merge into one paths list

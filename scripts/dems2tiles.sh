@@ -32,7 +32,7 @@ for (( i=0; i<${#lefts[@]}; i++))
   tile_res=1  # tile resolution, default is 1.
   right=$(expr $left + $tile_res)
   up=$(expr $bottom + $tile_res)
-  date_center=0.583      # priority date, e.g., 0.5 represents the middle of a year; 0.583 represents July 1.
+  date_center=0.583        ### Priority date, e.g., 0.5 represents the middle of a year; 0.583 represents July 1.
   DIR_DATA=data/aster-stereo/SETP-$year
   DIR_Tile=$DIR_DATA/tiles-dem/tile-$bottom-$left
   mkdir -p $DIR_Tile      ### create the directory

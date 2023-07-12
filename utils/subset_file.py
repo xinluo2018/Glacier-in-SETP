@@ -90,8 +90,8 @@ def readTiff(path_in):
     espg_code = osr.SpatialReference(wkt=im_proj).GetAttrValue('AUTHORITY',1)
 
     img_info = {'geoextent': extent, 'geotrans':im_geotrans, \
-                'geosrs': espg_code, 'row': im_row, 'col': im_col,\
-                    'bands': im_bands}
+                    'geosrs': espg_code, 'row': im_row, 'col': im_col,\
+                        'bands': im_bands}
 
     if im_bands > 1:
         img_array = np.transpose(img_array, (1, 2, 0)).astype(np.float)  # 
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     # Pass arguments 
     args = get_args()
     ifiles = args.ifile[:]           # input file(s)
-    ofile = args.ofile[0]           # output file(s)
+    ofile = args.ofile[0]            # output file(s)
     extent = args.extent[:]          # lon/lat variable names
     mask_path = args.mask_file[:]
     coord_name = args.coord_name[:]

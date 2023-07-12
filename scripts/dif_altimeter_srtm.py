@@ -5,7 +5,6 @@
 ##     this scripts can be used for processing of icesat-1, icesat-2 and cryosat-2 data.
 ## usage: python scripts/dif_altimeter_srtm.py -dtype icesat-1
 
-
 import os
 import h5py
 import numpy as np
@@ -27,12 +26,12 @@ def get_args():
 
 #### Data to be read in
 dir_srtm_tiles = 'data/dem-data/srtm-c/tiles'
-dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles'       ## get land type of water
-dir_stable_tiles = 'data/land-cover/stable-cover/tiles-2010'  ## get stable land
+dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles'        ## get land type of water
+dir_stable_tiles = 'data/land-cover/stable-cover/tiles-2010'   ## get stable land
 dir_glacier_tiles = 'data/land-cover/rgi60/tiles'
 paths_srtm_tile = glob(dir_srtm_tiles+'/tile_??_??.tif')
 paths_srtm_tile.sort()
-tiles_id = [path_srtm_tile[-14:-4] for path_srtm_tile in paths_srtm_tile]
+tiles_id = [os.path.basename(path_srtm_tile).split('.')[0] for path_srtm_tile in paths_srtm_tile]
 
 
 ##### ----------------------------copy the utility code----------------------------------- #####
@@ -177,7 +176,6 @@ if __name__ == '__main__':
 
     #### Data to be writen out
     dir_dif_altimeter = dir_altimeter + '/tiles-dif-srtm'
-
     if not os.path.exists(dir_dif_altimeter): os.makedirs(dir_dif_altimeter)
     for tile_id in tiles_id:
         print('Tile id:', tile_id)
@@ -224,7 +222,7 @@ if __name__ == '__main__':
         ### 2. Remove altimeter data which is out of the dem image extent.
         lon_min_srtm_tile, lon_max_srtm_tile, lat_min_srtm_tile, lat_max_srtm_tile = srtm_tile_info['geoextent']
         ids = np.where((altimeter_tile_years['lon']>lon_min_srtm_tile) & (altimeter_tile_years['lon']<lon_max_srtm_tile) & \
-                                    (altimeter_tile_years['lat']>lat_min_srtm_tile) & (altimeter_tile_years['lat']<lat_max_srtm_tile))[0]
+                                (altimeter_tile_years['lat']>lat_min_srtm_tile) & (altimeter_tile_years['lat']<lat_max_srtm_tile))[0]
         ## 2.1. Update the altimeter data: remove the icesat data which is out of the srtm extent. 
         for key in altimeter_tile_years:
             altimeter_tile_years[key] = altimeter_tile_years[key][ids]
@@ -251,7 +249,7 @@ if __name__ == '__main__':
 
         ### 4. Calculate the elevation difference between srtm and altimeter data.
         row_altimeter_srtm, col_altimeter_srtm = geo2imagexy(x=altimeter_tile_years['lon'], \
-                            y=altimeter_tile_years['lat'], gdal_trans=srtm_tile_info['geotrans'], integer=True)  ## update the row_altimeter_srtm and col_altimeter_srtm.
+                        y=altimeter_tile_years['lat'], gdal_trans=srtm_tile_info['geotrans'], integer=True)  ## update the row_altimeter_srtm and col_altimeter_srtm.
         h_srtm = srtm_tile[row_altimeter_srtm, col_altimeter_srtm]
         h_dif = altimeter_tile_years['h'] - h_srtm
         altimeter_tile_years['h_dif'] = h_dif

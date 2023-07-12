@@ -18,15 +18,14 @@ from utils.crop2extent import img2extent
 
 ### Paths/Files to be read in.
 dir_proj = '/home/xin/Developer-luo/Glacier-in-SETP'
-paths_dif_tiles = glob('data/aster-stereo/tiles-dif-map/*_albers.tif')
-dir_glacier_tile = 'data/land-cover/rgi60/tiles'
-dir_stable_tile = 'data/land-cover/stable-cover/tiles-2010'            
-path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles' 
-# res_tile = 0.5   ### 0.5 degree for each statistic unit.
-
+paths_dif_tiles = glob('data/aster-stereo/tiles-sub-dif-map/*_albers.tif')
+paths_dif_tiles.sort()
+dir_glacier_tile = 'data/land-cover/rgi60/tiles-sub'
+dir_stable_tile = 'data/land-cover/stable-cover/tiles-sub-2010'
+dir_srtm_tile_albers = 'data/dem-data/srtm-c/tiles-sub' 
 
 ### Path to be write out.
-paths_stat_dif_dems = dir_proj+'/data/aster-stereo/stat_dif_tiles_bins.nc'
+paths_stat_dif_dems = dir_proj+'/data/aster-stereo/stat_dif_tiles_sub_bins.nc'
 
 ### Parameters setting
 elev_bin_start, elev_bin_end, elev_bin = 2500, 7500, 100
@@ -107,10 +106,10 @@ def stat_glacier_bins_years(glacier_mask, elev_dif_maps, dem_base, elev_range=[2
                                                 (elev_dif_maps[:,:,i_map] > -100) & (elev_dif_maps[:,:,i_map] < 100))         
             points_bin = elev_dif_maps[:,:,i_map][ids_bin]
             points_bin_filter = outlier_remove_sigma(data=points_bin, coef_sigma=coef_sigma)
-            if points_bin_filter.shape[0] < 50:
+            if points_bin_filter.shape[0] < 30:
                 mean_dif_bins[i_bin, i_map] = np.nan
                 std_dif_bins[i_bin, i_map] = np.nan
-            elif points_bin_filter.shape[0] >= 50:
+            elif points_bin_filter.shape[0] >= 30:
                 ### mean and standard deviation of elevation difference of bin
                 mean_dif_bins[i_bin, i_map] = np.mean(points_bin_filter)
                 std_dif_bins[i_bin, i_map] = np.std(points_bin_filter)
@@ -132,13 +131,12 @@ if __name__ == '__main__':
         print('Processing tile: ', path_dif_tile)
         ### configuration
         full_name = os.path.basename(path_dif_tile)
-        tile_id = os.path.splitext(full_name)[0][:10]
+        tile_id = full_name.replace('_albers.tif', '')
         tiles_id.append(tile_id)
         path_stable_tile = dir_stable_tile + '/' + tile_id + '_albers.tif'            
         path_glacier_tile = dir_glacier_tile + '/' + tile_id+'_albers.tif'
-        path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles/' + tile_id + '_albers.tif'  ## used for area calculation.
+        path_srtm_tile_albers = dir_srtm_tile_albers + '/' + tile_id + '_albers.tif'  ## used for area calculation.
         srtm_tile_albers, srtm_tile_albers_info = readTiff(path_srtm_tile_albers)
-
         stable_tile_mask = img2extent(path_img=path_stable_tile, \
                             extent=srtm_tile_albers_info['geoextent'], size_target=srtm_tile_albers.shape) # read and resize
         glacier_tile_mask = img2extent(path_img=path_glacier_tile, \
@@ -160,7 +158,6 @@ if __name__ == '__main__':
         mean_glacier_tiles_bins[i_tile,:,:] = mean_dif_tile_bins
         std_glacier_tiles_bins[i_tile,:,:] = std_dif_tile_bins
         area_glacier_tiles_bins[i_tile,:] = area_glacier_tile_bins
-
     ### 3) write out statistic both on stable region and glacier regoin to the xarray .nc file.
     if os.path.exists(paths_stat_dif_dems): os.remove(paths_stat_dif_dems)
     ### Conver to xarray data.

@@ -3,12 +3,6 @@
 # des: Area weighting by tiles and bins in the statistics.
 
 import numpy as np
-# import matplotlib.pyplot as plt
-# import h5py
-# from utils.ransac_fitting import ransac_fitting
-# import pandas as pd
-# import xarray as xr
-
 
 
 def stat_tiles_weighting(mean_tiles, std_tiles, glacier_area_tiles):
@@ -74,34 +68,32 @@ def stat_bins_tiles_weighting(mean_tiles_bins, std_tiles_bins, glacier_area_tile
         mean_tiles_weighted: xr.dataarray, glacier-area weighted mean elevation change for each tile. 
         mean_setp_weighted: xr.dataarray, glacier-area weighted mean elevation change for overall setp. 
     """
-    ### a) glacier area (bin-based) weighting by bins.
     years = mean_tiles_bins.years.values
     bins_id = mean_tiles_bins.bins_id.values
     tiles_id = mean_tiles_bins.tiles_id.values
-    glacier_area_tiles_bins_3d = glacier_area_tiles_bins.expand_dims(dim={"years": years}, axis=2)
-    glacier_area_tiles_bins_3d = ~np.isnan(mean_tiles_bins)*glacier_area_tiles_bins_3d  ## mask the nan values before area weighting
-    glacier_area_tiles_2d = glacier_area_tiles_bins_3d.sum(dim=('bins_id'))
-    glacier_area_tiles_3d = glacier_area_tiles_2d.expand_dims(dim={'bins_id': bins_id}, axis=1)
+    ### a) glacier area weighting by bins for each tile.
+    glacier_area_tiles_bins_3d = glacier_area_tiles_bins.expand_dims(dim={"years": years}, axis=2)  ## (tiles_id, bins_id, years)
+    glacier_area_tiles_bins_3d = ~np.isnan(mean_tiles_bins)*glacier_area_tiles_bins_3d  ### mask the nan statistic values before area weighting
+    glacier_area_tiles_2d = glacier_area_tiles_bins_3d.sum(dim=('bins_id'))             ### total area of bins. 
+    glacier_area_tiles_3d = glacier_area_tiles_2d.expand_dims(dim={'bins_id': bins_id}, axis=1)  ## (tiles_id, bins_id, years), 
     glacier_area_binsWeight_3d = glacier_area_tiles_bins_3d/glacier_area_tiles_3d   ## (tiles_id, bins_id, years), weights for each bin of each year.
     mean_tiles_binsWeighted = mean_tiles_bins * glacier_area_binsWeight_3d.values  
     mean_tiles_binsWeighted = mean_tiles_binsWeighted.sum(dim=('bins_id'))       ## (tiles_id, years)
     mean_tiles_binsWeighted = mean_tiles_binsWeighted.where(mean_tiles_binsWeighted!=0, np.nan)  # if values == 0, value -> np.nan. 
     std_tiles_binsWeighted = std_tiles_bins * glacier_area_binsWeight_3d
     std_tiles_binsWeighted = std_tiles_binsWeighted.sum(dim=('bins_id'))       ## (tiles_id, years)
-    ### b) glacier area (tile-based) weighting by tiles.
+    ### b) glacier area weighting by tiles.
     glacier_area_tiles = glacier_area_tiles_bins.sum(dim='bins_id')   ###（tiles_id,）
     glacier_area_tiles_2d = glacier_area_tiles.expand_dims(dim={'years': years}, axis=1)  ## (tiles_id, years)
     glacier_area_tiles_2d = ~np.isnan(mean_tiles_binsWeighted)*glacier_area_tiles_2d.values  ## (tiles_id, years), mask the nan values before area weighting
-    glacier_area_1d = glacier_area_tiles_2d.sum(dim=('tiles_id'))   ### (years,)    
+    glacier_area_1d = glacier_area_tiles_2d.sum(dim=('tiles_id'))     ### (years,)    
     glacier_area_2d = glacier_area_1d.expand_dims(dim={'tiles_id': tiles_id}, axis=0)   ### (tiles_id, years)    
     glacier_area_tilesWeight_2d = glacier_area_tiles_2d/glacier_area_2d   ### (tiles_id, years)
     mean_setp_tilesWeighted = mean_tiles_binsWeighted*glacier_area_tilesWeight_2d    ## (tiles_id, years)
     mean_setp_tilesWeighted = mean_setp_tilesWeighted.sum(dim=('tiles_id'))     ## (years,)      
     std_setp_tilesWeighted = std_tiles_binsWeighted*glacier_area_tilesWeight_2d    ## (tiles_id, years)
     std_setp_tilesWeighted = std_setp_tilesWeighted.sum(dim=('tiles_id'))     ## (years,)   
-
     return mean_tiles_binsWeighted, std_tiles_binsWeighted, mean_setp_tilesWeighted, std_setp_tilesWeighted
-
 
 
 def stat_tiles_bins_weighting(mean_tiles_bins, std_tiles_bins, glacier_area_tiles_bins):
@@ -121,6 +113,7 @@ def stat_tiles_bins_weighting(mean_tiles_bins, std_tiles_bins, glacier_area_tile
     years = mean_tiles_bins.years.values
     bins_id = mean_tiles_bins.bins_id.values
     tiles_id = mean_tiles_bins.tiles_id.values
+    ### a) glacier area weighting by tiles for each bin.
     glacier_area_tiles_bins_3d = glacier_area_tiles_bins.expand_dims(dim={"years": years}, axis=2)
     glacier_area_tiles_bins_3d = ~np.isnan(mean_tiles_bins)*glacier_area_tiles_bins_3d.values   ## mask the nan values before area weighting
     glacier_area_bins_2d = glacier_area_tiles_bins_3d.sum(dim=('tiles_id'))   ### (bins_id, years), sumation of area for each bin of setp.
@@ -128,9 +121,10 @@ def stat_tiles_bins_weighting(mean_tiles_bins, std_tiles_bins, glacier_area_tile
     glacier_area_tilesWeight_3d = glacier_area_tiles_bins_3d/glacier_area_bins_3d.values   ### weights for each bin of setp  
     mean_bins_tilesWeighted_3d = mean_tiles_bins*glacier_area_tilesWeight_3d.values
     mean_bins_tilesWeighted = mean_bins_tilesWeighted_3d.sum(dim='tiles_id')   ### (bins_id, years)
+    mean_bins_tilesWeighted = mean_bins_tilesWeighted.where(mean_bins_tilesWeighted!=0, np.nan)  # if values == 0, value -> np.nan. 
     std_bins_tilesWeighted_3d = std_tiles_bins*glacier_area_tilesWeight_3d.values
     std_bins_tilesWeighted = std_bins_tilesWeighted_3d.sum(dim='tiles_id')     ### (bins_id, years)
-    ### b) glacier area (tile-based) weighted mean elevation change for setp.
+    ### b) glacier area weighting by bins.
     glacier_area_bins = glacier_area_tiles_bins.sum(dim='tiles_id')   ###（bins_id）
     glacier_area_bins_2d = glacier_area_bins.expand_dims(dim={'years': years}, axis=1)  ## (bins_id, years)
     glacier_area_bins_2d = ~np.isnan(mean_bins_tilesWeighted)*glacier_area_bins_2d.values  ## (bins_id, years), mask the nan values before area weighting
@@ -142,5 +136,4 @@ def stat_tiles_bins_weighting(mean_tiles_bins, std_tiles_bins, glacier_area_tile
     std_setp_binsWeighted = std_bins_tilesWeighted*glacier_area_binsWeight_2d      ## (bins_id, years)
     std_setp_binsWeighted = std_setp_binsWeighted.sum(dim=('bins_id'))             ## (years,)   
     return mean_bins_tilesWeighted, std_bins_tilesWeighted, mean_setp_binsWeighted, std_setp_binsWeighted
-
 

@@ -17,10 +17,6 @@ from utils.geotif_io import readTiff
 from utils.crop2extent import img2extent
 
 
-# ### Note: the tiles should be merged firstly.
-# command_merge = 'python utils/merge_files.py data/icesat-1/tiles-dif-srtm/tile_??_??.h5 -o data/icesat-1/tiles-dif-srtm/tiles_merge.h5'
-# print(os.popen(command_merge).read())
-
 ### paths to be read in and write out.
 # path_dif_merge = 'data/icesat-1/tiles-dif-srtm/tiles_merge.h5'   ## path of data to read in
 path_stat_dif = 'data/icesat-1/stat_dif_isat1.nc'      ## path to write out
@@ -95,7 +91,7 @@ if __name__ == '__main__':
     std_glacier_tiles_years = np.empty(shape=(num_tiles, num_years))
 
     print('------- Calculate glacier area by tiles -------')
-    for i_tile, tile_id in enumerate(tiles_id):        
+    for i_tile, tile_id in enumerate(tiles_id):
         path_glacier_tile = 'data/land-cover/rgi60/tiles/' + '/' + tile_id+'_albers.tif'
         path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles/' + tile_id + '_albers.tif'  ## used for area calculation.
         path_dif_tile = 'data/icesat-1/tiles-dif-srtm/'+tile_id+'.h5'
