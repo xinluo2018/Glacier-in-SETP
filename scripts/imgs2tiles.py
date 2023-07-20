@@ -62,13 +62,13 @@ bottom_tiles = [31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30, 30, 29, 29, 29, 29, 
 
 if __name__ == '__main__':
 
-  ## -- 1. dems difference tile
-  # res_tile_sub = 1
-  # dir_imgs_in = 'data/aster-stereo/tiles-dif-map'
-  # dir_tile_out = 'data/aster-stereo/tiles-sub-dif-map'
-  # path_imgs = glob(dir_imgs_in + '/tile_??_??.tif')
-  # imgs2tiles(path_imgs_in=path_imgs, dir_tile_out=dir_tile_out, \
-  #                      tile_corners=[left_tiles, bottom_tiles], res_tile=res_tile_sub)
+  # -- 1. dems difference tile
+  res_tile_sub = 1
+  dir_imgs_in = 'data/aster-stereo/tiles-dif-map'
+  dir_tile_out = 'data/aster-stereo/tiles-sub-dif-map'
+  path_imgs = glob(dir_imgs_in + '/tile_??_??.tif')
+  imgs2tiles(path_imgs_in=path_imgs, dir_tile_out=dir_tile_out, \
+                       tile_corners=[left_tiles, bottom_tiles], res_tile=res_tile_sub)
 
 
   # ## -- 2. JRC water tile
@@ -80,13 +80,13 @@ if __name__ == '__main__':
   #                                   tile_corners=[left_tiles, bottom_tiles], res_tile=res_tile_sub)
 
 
-  ### -- 3. Globeland30 stable land cover tiles
-  res_tile_sub = 0.5
-  dir_imgs_in = 'data/land-cover/stable-cover/tiles-2010'
-  dir_tile_out = 'data/land-cover/stable-cover/tiles-sub-2010'
-  path_imgs = glob(dir_imgs_in + '/tile_??_??.tif')
-  imgs2tiles(path_imgs_in=path_imgs, dir_tile_out=dir_tile_out, \
-                              tile_corners=[left_tiles, bottom_tiles], res_tile=res_tile_sub)
+  # ### -- 3. Globeland30 stable land cover tiles
+  # res_tile_sub = 0.5
+  # dir_imgs_in = 'data/land-cover/stable-cover/tiles-2010'
+  # dir_tile_out = 'data/land-cover/stable-cover/tiles-sub-2010'
+  # path_imgs = glob(dir_imgs_in + '/tile_??_??.tif')
+  # imgs2tiles(path_imgs_in=path_imgs, dir_tile_out=dir_tile_out, \
+  #                             tile_corners=[left_tiles, bottom_tiles], res_tile=res_tile_sub)
 
 
   # ### -- 4.  srtm dem tiles

@@ -14,6 +14,8 @@ from glob import glob
 
 os.chdir('/home/xin/Developer-luo/Glacier-in-SETP')
 
+spatial_unit = 'tile_sub'   ## tile/tile_sub
+
 def get_args():
     """ Get command-line arguments. """
     parser = argparse.ArgumentParser(

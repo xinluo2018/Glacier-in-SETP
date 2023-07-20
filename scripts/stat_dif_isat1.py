@@ -16,18 +16,22 @@ from glob import glob
 from utils.geotif_io import readTiff
 from utils.crop2extent import img2extent
 
+# spatial_unit = 'tile_sub'   ## 'tile/tile_sub
+spatial_unit = 'tile'         ## 'tile/tile_sub
+
+if spatial_unit == 'tile':  dir_dif_srtm = 'tiles-dif-srtm'; dir_tiles = 'tiles'
+elif spatial_unit == 'tile_sub':  dir_dif_srtm = 'tiles-sub-dif-srtm'; dir_tiles = 'tiles-sub'
 
 ### paths to be read in and write out.
-# path_dif_merge = 'data/icesat-1/tiles-dif-srtm/tiles_merge.h5'   ## path of data to read in
-path_stat_dif = 'data/icesat-1/stat_dif_isat1.nc'      ## path to write out
+if spatial_unit == 'tile': path_stat_dif = 'data/icesat-1/stat_dif_isat1_tiles.nc'      ## path to write out
+elif spatial_unit == 'tile_sub': path_stat_dif = 'data/icesat-1/stat_dif_isat1_tiles_sub.nc'      ## path to write out
 
 ### Parameters setting.
-paths_dif_tiles = glob('data/icesat-1/tiles-dif-srtm/tile_??_??.h5')
+paths_dif_tiles = glob('data/icesat-1/'+dir_dif_srtm+'/tile_*.h5')
 paths_dif_tiles.sort()
-tiles_id = [path_dif_tiles[-13:-3] for path_dif_tiles in paths_dif_tiles ]
+tiles_id = [path_dif_tiles.split('/')[-1].split('.')[0] for path_dif_tiles in paths_dif_tiles ]
 years = [str(year) for year in range(2003, 2010)]
 num_tiles, num_years = len(tiles_id), len(years)
-
 
 def outlier_remove_sigma(data, coef_sigma):
     data = data[~np.isnan(data)]
@@ -82,7 +86,6 @@ def stat_years_glacier(altimeter_dict, coef_sigma):
 
 
 if __name__ == '__main__':
-
     ### 1) Glacier area of bins
     area_glacier_tiles = np.empty(shape=(num_tiles))
     mean_stable_tiles_years = np.empty(shape=(num_tiles, num_years))
@@ -92,9 +95,9 @@ if __name__ == '__main__':
 
     print('------- Calculate glacier area by tiles -------')
     for i_tile, tile_id in enumerate(tiles_id):
-        path_glacier_tile = 'data/land-cover/rgi60/tiles/' + '/' + tile_id+'_albers.tif'
-        path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles/' + tile_id + '_albers.tif'  ## used for area calculation.
-        path_dif_tile = 'data/icesat-1/tiles-dif-srtm/'+tile_id+'.h5'
+        path_glacier_tile = 'data/land-cover/rgi60/'+dir_tiles+'/' + '/' + tile_id+'_albers.tif'
+        path_srtm_tile_albers = 'data/dem-data/srtm-c/'+dir_tiles+'/' + tile_id + '_albers.tif'  ## used for area calculation.
+        path_dif_tile = 'data/icesat-1/'+dir_dif_srtm+'/'+tile_id+'.h5'
         print('tile_id:', tile_id)
         srtm_tile_albers, srtm_tile_albers_info = readTiff(path_srtm_tile_albers)
         glacier_tile_mask = img2extent(path_img=path_glacier_tile, \

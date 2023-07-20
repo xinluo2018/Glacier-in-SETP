@@ -17,6 +17,9 @@ from utils.geotif_io import readTiff
 from utils.crop2extent import img2extent
 import argparse
 
+# spatial_unit = 'tile'   ## 'tile
+spatial_unit = 'tile_sub'   ## 'tile
+
 def get_args():
     """ Get command-line arguments. """
     parser = argparse.ArgumentParser(
@@ -94,19 +97,28 @@ if __name__ == '__main__':
     if dtype == 'icesat-2':
         years = [str(year) for year in range(2018, 2023)]
         data_dir = 'data/icesat-2'
-        path_stat_dif = data_dir + 'stat_dif_isat2.nc'      ## path to write out
+        if spatial_unit == 'tile_sub':
+            path_stat_dif = data_dir + '/stat_dif_isat2_tiles_sub_bins.nc'  ## path to write out
+        elif spatial_unit == 'tile':
+            path_stat_dif = data_dir + '/stat_dif_isat2_tiles_bins.nc'      ## path to write out    
     elif dtype == 'cryosat-2':
         years = [str(year) for year in range(2010, 2023)]
         data_dir = 'data/cryosat-2'
-        path_stat_dif = data_dir + '/stat_dif_cryo2.nc'      ## path to write out    
+        if spatial_unit == 'tile_sub':
+            path_stat_dif = data_dir + '/stat_dif_cryo2_tiles_sub_bins.nc'      ## path to write out                
+        elif spatial_unit == 'tile':
+            path_stat_dif = data_dir + '/stat_dif_cryo2_tiles_bins.nc'      ## path to write out    
 
     ### Parameters setting.
-    paths_dif_tiles = glob(data_dir + '/tiles-dif-srtm/tile_??_??.h5')
+    if spatial_unit == 'tile_sub': dir_dif_srtm = 'tiles-sub-dif-srtm'; dir_tiles = 'tiles-sub'
+    elif spatial_unit == 'tile': dir_dif_srtm = 'tiles-dif-srtm'; dir_tiles = 'tiles'
+    paths_dif_tiles = glob(data_dir + '/' + dir_dif_srtm + '/tile_*.h5')
+
     paths_dif_tiles.sort()
-    tiles_id = [path_dif_tiles[-13:-3] for path_dif_tiles in paths_dif_tiles ]
+    tiles_id = [path_dif_tiles.split('/')[-1].split('.')[0] for path_dif_tiles in paths_dif_tiles ]
     elev_start, elev_end, elev_bin = 2500, 7500, 100
     bins_id = [str(elev_bin_start) + '-' + str(elev_bin_start+elev_bin) for \
-                                        elev_bin_start in range(elev_start, elev_end, elev_bin)]
+                                            elev_bin_start in range(elev_start, elev_end, elev_bin)]
     num_bins, num_tiles, num_years = len(bins_id), len(tiles_id), len(years)
     ### statistic for the glacier region
     mean_glacier_tiles_bins = np.empty(shape=(num_tiles, num_bins, num_years))
@@ -119,9 +131,9 @@ if __name__ == '__main__':
 
     for i_tile, tile_id in enumerate(tiles_id):
         print('...Tile id in processing:', tile_id)
-        path_dif = data_dir + '/tiles-dif-srtm/' + tile_id + '.h5'
-        path_glacier_tile = 'data/land-cover/rgi60/tiles/' + '/' + tile_id+'_albers.tif'
-        path_srtm_tile_albers = 'data/dem-data/srtm-c/tiles/' + tile_id + '_albers.tif'  ## used for area calculation.
+        path_dif = data_dir + '/' + dir_dif_srtm + '/' + tile_id + '.h5'
+        path_glacier_tile = 'data/land-cover/rgi60/'+dir_tiles+'/' + '/' + tile_id+'_albers.tif'
+        path_srtm_tile_albers = 'data/dem-data/srtm-c/'+dir_tiles+'/' + tile_id + '_albers.tif'  ## used for area calculation.
         srtm_tile_albers, srtm_tile_albers_info = readTiff(path_srtm_tile_albers)        
         glacier_tile_mask = img2extent(path_img=path_glacier_tile, \
                                 extent=srtm_tile_albers_info['geoextent'], size_target=srtm_tile_albers.shape) # read and resize
