@@ -3,7 +3,7 @@
 ## create: 2023.06.19;
 ## des: Batch processing from altimeter-derived and dems-derived elevation data to statistic data.
 ##      this scripts is used for icesat-1, icesat-2, cryosat-2 and aster stereo imagey-derived elevation data.
-## usage: ./scripts/aster_dem_post.sh -y 2007
+## usage: ./scripts/batch_process_ele2stat.sh
 
 
 

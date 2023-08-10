@@ -1,6 +1,6 @@
 ## author: xin luo 
 # creat: 2023.2.19; # modify: 
-# des: generate dem difference maps by using aster dems.
+# des: generate dem difference maps by using aster dems, aster dem - srtm dem
 ## usage: python scripts/dif_dems_srtm.py
 
 

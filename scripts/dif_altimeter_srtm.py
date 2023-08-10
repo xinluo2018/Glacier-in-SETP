@@ -28,7 +28,7 @@ def get_args():
 
 #### Data to be read in
 dir_srtm_tiles = 'data/dem-data/srtm-c/tiles'
-dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles'        ## get land type of water
+# dir_wat_tiles = 'data/land-cover/water/water-jrc/tiles'        ## get land type of water
 dir_stable_tiles = 'data/land-cover/stable-cover/tiles-2010'   ## get stable land
 dir_glacier_tiles = 'data/land-cover/rgi60/tiles'
 paths_srtm_tile = glob(dir_srtm_tiles+'/tile_??_??.tif')
@@ -184,7 +184,7 @@ if __name__ == '__main__':
         path_dif_altimeter = dir_dif_altimeter + '/'+tile_id+'.h5'
         if os.path.exists(path_dif_altimeter): os.remove(path_dif_altimeter)
         path_srtm_tile = dir_srtm_tiles + '/'+ tile_id + '.tif'
-        path_wat_tile = dir_wat_tiles + '/'+tile_id+'.tif'
+        # path_wat_tile = dir_wat_tiles + '/'+tile_id+'.tif'
         path_stable_tile = dir_stable_tiles + '/'+tile_id+'.tif'
         path_glacier_tile = dir_glacier_tiles + '/'+ tile_id +'.tif'
         f_write = h5py.File(path_dif_altimeter, "w")
@@ -217,7 +217,7 @@ if __name__ == '__main__':
                         altimeter_tile_years['lat'] = np.concatenate([altimeter_tile_years['lat'], f_altimeter['lat'][:]], axis=0) 
                         altimeter_tile_years['h'] = np.concatenate([altimeter_tile_years['h'], f_altimeter['h'][:]], axis=0) 
                         altimeter_tile_years['t_dyr'] = np.concatenate([altimeter_tile_years['t_dyr'], f_altimeter['t_dyr'][:]], axis=0)
-                        if data_type == 'eolis-point': 
+                        if data_type == 'eolis-point':
                             altimeter_tile_years['is_swath'] = np.concatenate([altimeter_tile_years['is_swath'], f_altimeter['is_swath'][:]], axis=0) 
 
         if len(altimeter_tile_years) == 0: continue

@@ -73,7 +73,7 @@ def imgs_in_extent(paths_img, extent):
     lat_in_up = lats_img[0]>extent[3]
     lat_in_down = lats_img[1]<extent[2]
     img_in = lon_in_left or lon_in_right or lat_in_up or lat_in_down    ## for each case, there is no overlap between the image and extent. 
-    if img_in is False:
+    if img_in == False:
       paths_imgs_extent.append(path_img)
   return paths_imgs_extent
 

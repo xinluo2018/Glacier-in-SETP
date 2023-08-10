@@ -150,3 +150,5 @@ def tiles2extent(dir_tiled_data, extent, path_save=None):
     img_croped = img2extent(path_img='tiles_mosaic.tif', extent=extent, path_save=path_save)
     os.remove('tiles_mosaic.tif')
     return img_croped
+
+

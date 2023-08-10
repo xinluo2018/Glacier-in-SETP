@@ -107,7 +107,7 @@ if __name__ == '__main__':
         if spatial_unit == 'tile_sub':
             path_stat_dif = data_dir + '/stat_dif_cryo2_tiles_sub_bins.nc'      ## path to write out                
         elif spatial_unit == 'tile':
-            path_stat_dif = data_dir + '/stat_dif_cryo2_tiles_bins.nc'      ## path to write out    
+            path_stat_dif = data_dir + '/stat_dif_cryo2_tiles_bins.nc'      ## path to write out
 
     ### Parameters setting.
     if spatial_unit == 'tile_sub': dir_dif_srtm = 'tiles-sub-dif-srtm'; dir_tiles = 'tiles-sub'
