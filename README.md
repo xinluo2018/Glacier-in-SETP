@@ -40,5 +40,8 @@ Glacier change monitoring for the Southeastern Tibetan Plateau by using aster st
 #### 5.1 Aster dem evaluation by using the notebooks/dem_evaluate_atl06.ipynb and notebooks/dem_evaluate_galh14.ipynb.
 
 ## To do
-1) mask out the data/cryotempo-points/2021/cryotempo_points_merge.h5 by using data/rgi60/rgi60_setp_mask.tif
+(1) mask out the data/cryotempo-points/2021/cryotempo_points_merge.h5 by using data/rgi60/rgi60_setp_mask.tif
+(2) divide the folders into data access, data preprocess, data process, and data visualized analysis
+
+
 

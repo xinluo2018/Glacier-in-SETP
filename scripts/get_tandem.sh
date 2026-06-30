@@ -15,7 +15,7 @@ do
   data_name=$(echo `basename $line`)
   path_save=${dir_save}/${data_name}
   if [ ! -f $path_save ]; then
-    wget -O $path_save $line --auth-no-challenge --user='xinluo_xin@163.com' --password='luo_513812'
+    wget -O $path_save $line --auth-no-challenge --user='xinluo_xin@163.com' --password='luo_******'
   fi
 done
 

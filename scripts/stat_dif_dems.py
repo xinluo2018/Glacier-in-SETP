@@ -1,7 +1,8 @@
 ## author: xin luo 
 # creat: 2023.5.12; # modify: 2023.6.20
-# des: statistic of the dems-based elevation differences on 1) the glacier region by tiles and bins,
-#      and 2）the stable region by tiles.
+# des: statistic of the dems-based elevation differences on 
+#       1) the glacier region by tiles and bins,
+#       2）the stable region by tiles.
 ##     The statistical indicators include mean and standard deviation.
 ## usage: python ./scripts/stat_dif_dems.py
 

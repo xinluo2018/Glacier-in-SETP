@@ -19,7 +19,7 @@ def ransac_fitting(x, y, thre_mask):
     x_new = x[~np.isnan(y)]
     y_new = y[~np.isnan(y)]
     if len(y_new) > 1:
-        ransac = linear_model.RANSACRegressor(random_state=42)
+        ransac = linear_model.RANSACRegressor(random_state=4)
         x = np.array(x)[:, np.newaxis]
         x_new = np.array(x_new)[:, np.newaxis]
         ransac.fit(x_new, y_new)
